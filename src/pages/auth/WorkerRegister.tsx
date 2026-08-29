@@ -23,9 +23,23 @@ export function WorkerRegister() {
     );
   };
 
-  const handleRegister = () => {
-    login('worker', name || undefined);
-    navigate('/worker/dashboard');
+  const handleRegister = async () => {
+    try {
+      const trimmedName = name.trim();
+      if (!trimmedName || !email || !mobile || !password || !confirmPassword) {
+        alert('Please complete all fields');
+        return;
+      }
+      if (password !== confirmPassword) {
+        alert('Passwords do not match');
+        return;
+      }
+
+      await login('worker', { name: trimmedName, email, phone_number: mobile, password, role: 'worker' });
+      navigate('/worker/dashboard');
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Registration failed');
+    }
   };
 
   return (

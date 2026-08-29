@@ -14,13 +14,30 @@ export function CustomerLogin() {
   const navigate = useNavigate();
   const reduceMotion = useReducedMotion();
 
-  const handlePasswordLogin = () => {
-    login('customer');
-    navigate('/customer/dashboard');
+  const handlePasswordLogin = async () => {
+    try {
+      await login('customer', { email, password, role: 'customer' });
+      navigate('/customer/dashboard');
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Login failed');
+    }
   };
 
-  const handleSendOTP = () => {
-    navigate('/otp-verify/customer');
+  const handleSendOTP = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/api/auth/otp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone_number: mobile, purpose: 'login' }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data?.detail || data?.message || 'Could not send OTP');
+      }
+      navigate('/otp-verify/customer', { state: { phoneNumber: mobile } });
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Could not send OTP');
+    }
   };
 
   return (

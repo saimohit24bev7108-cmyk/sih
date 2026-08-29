@@ -14,13 +14,30 @@ export function WorkerLogin() {
   const navigate = useNavigate();
   const reduceMotion = useReducedMotion();
 
-  const handlePasswordLogin = () => {
-    login('worker');
-    navigate('/worker/dashboard');
+  const handlePasswordLogin = async () => {
+    try {
+      await login('worker', { email, password, role: 'worker' });
+      navigate('/worker/dashboard');
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Login failed');
+    }
   };
 
-  const handleSendOTP = () => {
-    navigate('/otp-verify/worker');
+  const handleSendOTP = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/api/auth/otp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone_number: mobile, purpose: 'login' }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data?.detail || data?.message || 'Could not send OTP');
+      }
+      navigate('/otp-verify/worker', { state: { phoneNumber: mobile } });
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Could not send OTP');
+    }
   };
 
   return (

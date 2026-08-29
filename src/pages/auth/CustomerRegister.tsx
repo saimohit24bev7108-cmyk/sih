@@ -15,9 +15,23 @@ export function CustomerRegister() {
   const navigate = useNavigate();
   const reduceMotion = useReducedMotion();
 
-  const handleRegister = () => {
-    login('customer', name || undefined);
-    navigate('/customer/dashboard');
+  const handleRegister = async () => {
+    try {
+      const trimmedName = name.trim();
+      if (!trimmedName || !email || !mobile || !password || !confirmPassword) {
+        alert('Please complete all fields');
+        return;
+      }
+      if (password !== confirmPassword) {
+        alert('Passwords do not match');
+        return;
+      }
+
+      await login('customer', { name: trimmedName, email, phone_number: mobile, password, role: 'customer' });
+      navigate('/customer/dashboard');
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Registration failed');
+    }
   };
 
   return (

@@ -10,9 +10,13 @@ export function AdminLogin() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    login('admin');
-    navigate('/admin/dashboard');
+  const handleLogin = async () => {
+    try {
+      await login('admin', { email, password, role: 'admin' });
+      navigate('/admin/dashboard');
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Login failed');
+    }
   };
 
   return (

@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth, type UserRole } from '@/context/AuthContext';
 import { ArrowLeft } from 'lucide-react';
 
 export function OTPVerify() {
   const { role } = useParams<{ role: string }>();
+  const location = useLocation();
   const navigate = useNavigate();
   const { login } = useAuth();
+  const [phoneNumber, setPhoneNumber] = useState((location.state as { phoneNumber?: string } | null)?.phoneNumber ?? '');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [countdown, setCountdown] = useState(30);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -50,16 +52,47 @@ export function OTPVerify() {
     inputRefs.current[nextEmpty === -1 ? 5 : nextEmpty]?.focus();
   };
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     const validRole = (role === 'customer' || role === 'worker') ? role : 'customer';
-    login(validRole as UserRole);
-    navigate(validRole === 'worker' ? '/worker/dashboard' : '/customer/dashboard');
+    const code = otp.join('');
+    if (!phoneNumber.trim()) {
+      alert('Please enter the mobile number associated with the OTP');
+      return;
+    }
+    if (code.length !== 6) {
+      alert('Please enter the full 6-digit OTP');
+      return;
+    }
+
+    try {
+      await login(validRole as UserRole, {
+        phone_number: phoneNumber,
+        code,
+        role: validRole as UserRole,
+      });
+      navigate(validRole === 'worker' ? '/worker/dashboard' : '/customer/dashboard');
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'OTP verification failed');
+    }
   };
 
-  const handleResend = () => {
-    setCountdown(30);
-    setOtp(['', '', '', '', '', '']);
-    inputRefs.current[0]?.focus();
+  const handleResend = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/api/auth/otp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone_number: phoneNumber, purpose: 'login' }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data?.detail || data?.message || 'Could not resend OTP');
+      }
+      setCountdown(30);
+      setOtp(['', '', '', '', '', '']);
+      inputRefs.current[0]?.focus();
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Could not resend OTP');
+    }
   };
 
   return (
@@ -77,6 +110,17 @@ export function OTPVerify() {
           <p className="text-sm text-[hsl(var(--muted-foreground))] text-center mb-8">
             Enter the 6-digit code sent to your mobile
           </p>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-[hsl(var(--foreground))] mb-1.5">Mobile Number</label>
+            <input
+              type="tel"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              placeholder="+91 9876543210"
+              className="w-full px-4 py-3 rounded-lg border border-[hsl(var(--input))] bg-[hsl(var(--background))] text-sm transition-all duration-200 focus:outline-none focus:border-[hsl(var(--primary))] focus:ring-2 focus:ring-[hsl(var(--ring))]"
+            />
+          </div>
 
           {/* OTP Inputs */}
           <div className="flex justify-center gap-3 mb-6" onPaste={handlePaste}>
