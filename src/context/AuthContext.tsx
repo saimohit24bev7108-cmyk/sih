@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
+import { apiRequest, clearAuthTokens, getRefreshToken, setAuthTokens } from '@/services/api';
 
 export type UserRole = 'customer' | 'worker' | 'admin';
 
@@ -22,36 +23,7 @@ interface AuthContextType extends AuthState {
   logout: () => Promise<void>;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-let accessTokenMemory: string | null = null;
-let refreshTokenMemory: string | null = null;
-
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-async function apiFetch<T>(path: string, payload?: Record<string, unknown>): Promise<T> {
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
-
-  if (accessTokenMemory) {
-    headers.Authorization = `Bearer ${accessTokenMemory}`;
-  }
-
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    method: 'POST',
-    headers,
-    credentials: 'include',
-    body: payload ? JSON.stringify(payload) : undefined,
-  });
-
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    const detail = data?.detail ?? data?.message ?? data?.error ?? 'Request failed';
-    throw new Error(typeof detail === 'string' ? detail : JSON.stringify(detail));
-  }
-
-  return data as T;
-}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [auth, setAuth] = useState<AuthState>({
@@ -61,9 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const setAuthenticatedState = (role: UserRole, userName: string, accessToken: string, refreshToken: string) => {
-    accessTokenMemory = accessToken;
-    refreshTokenMemory = refreshToken;
-
+    setAuthTokens(accessToken, refreshToken);
     setAuth({
       isLoggedIn: true,
       role,
@@ -85,22 +55,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error('Authentication details are required');
     }
 
+    type AuthApiResponse = {
+      success: boolean;
+      message?: string;
+      data?: {
+        access_token?: string;
+        refresh_token?: string;
+        user?: { role?: UserRole; email?: string; phone_number?: string };
+      };
+    };
+
     const isRegisterRequest = Boolean(payload.name || payload.phone_number) && !payload.code;
     const isOtpRequest = Boolean(payload.phone_number && payload.code);
 
     if (isRegisterRequest) {
-      const response = await apiFetch<{ success: boolean; data?: { access_token?: string; refresh_token?: string; user?: { role?: UserRole; email?: string; phone_number?: string; }; }; message?: string }>('/api/auth/register', {
-        name: payload.name,
-        email: payload.email,
-        phone_number: payload.phone_number,
-        password: payload.password,
-        role,
+      const response = await apiRequest<AuthApiResponse>('/api/auth/register', {
+        method: 'POST',
+        body: {
+          name: payload.name,
+          email: payload.email,
+          phone_number: payload.phone_number,
+          password: payload.password,
+          role,
+        },
       });
 
       const data = response.data ?? {};
-      const userName = payload.name || data.user?.email?.split('@')[0] || 'User';
       const accessToken = data.access_token ?? '';
       const refreshToken = data.refresh_token ?? '';
+      const userName = payload.name || data.user?.email?.split('@')[0] || 'User';
 
       if (!accessToken || !refreshToken) {
         throw new Error(response.message || 'No tokens returned from register endpoint');
@@ -111,17 +94,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     if (isOtpRequest) {
-      const response = await apiFetch<{ success: boolean; data?: { access_token?: string; refresh_token?: string; user?: { role?: UserRole; email?: string; phone_number?: string; }; }; message?: string }>('/api/auth/otp/verify', {
-        phone_number: payload.phone_number,
-        code: payload.code,
-        role,
-        purpose: 'login',
+      const response = await apiRequest<AuthApiResponse>('/api/auth/otp/verify', {
+        method: 'POST',
+        body: {
+          phone_number: payload.phone_number,
+          code: payload.code,
+          role,
+          purpose: 'login',
+        },
       });
 
       const data = response.data ?? {};
-      const userName = data.user?.email?.split('@')[0] || 'User';
       const accessToken = data.access_token ?? '';
       const refreshToken = data.refresh_token ?? '';
+      const userName = data.user?.email?.split('@')[0] || 'User';
 
       if (!accessToken || !refreshToken) {
         throw new Error(response.message || 'No tokens returned from OTP verification endpoint');
@@ -136,16 +122,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error('Email and password are required');
     }
 
-    const response = await apiFetch<{ success: boolean; data?: { access_token?: string; refresh_token?: string; user?: { role?: UserRole; email?: string; phone_number?: string; }; }; message?: string }>('/api/auth/login', {
-      email: normalizedEmail,
-      password: payload.password,
-      role,
+    const response = await apiRequest<AuthApiResponse>('/api/auth/login', {
+      method: 'POST',
+      body: {
+        email: normalizedEmail,
+        password: payload.password,
+        role,
+      },
     });
 
     const data = response.data ?? {};
-    const userName = data.user?.email?.split('@')[0] || 'User';
     const accessToken = data.access_token ?? '';
     const refreshToken = data.refresh_token ?? '';
+    const userName = data.user?.email?.split('@')[0] || 'User';
 
     if (!accessToken || !refreshToken) {
       throw new Error(response.message || 'No tokens returned from login endpoint');
@@ -155,16 +144,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
-    if (refreshTokenMemory) {
+    const currentRefreshToken = getRefreshToken();
+    if (currentRefreshToken) {
       try {
-        await apiFetch('/api/auth/logout', { refresh_token: refreshTokenMemory });
+        await apiRequest('/api/auth/logout', {
+          method: 'POST',
+          body: { refresh_token: currentRefreshToken },
+        });
       } catch {
         // Ignore server-side logout errors and clear local auth state anyway.
       }
     }
 
-    accessTokenMemory = null;
-    refreshTokenMemory = null;
+    clearAuthTokens();
     setAuth({ isLoggedIn: false, role: null, userName: '' });
   };
 

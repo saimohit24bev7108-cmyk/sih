@@ -5,7 +5,7 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
@@ -44,6 +44,13 @@ OTP_MAX_VERIFY_ATTEMPTS = 5
 
 _otp_store: Dict[str, Dict[str, Any]] = {}
 _otp_send_history: Dict[str, list[datetime]] = {}
+_LOGIN_FAILURE_WINDOW_SECONDS = 15 * 60
+_LOGIN_FAILURE_LIMIT_PER_ACCOUNT = 5
+_LOGIN_FAILURE_LIMIT_PER_IP = 10
+_LOGIN_LOCKOUT_SECONDS = 5 * 60
+_login_failures_by_account: Dict[str, list[datetime]] = {}
+_login_failures_by_ip: Dict[str, list[datetime]] = {}
+_login_lockouts: Dict[str, datetime] = {}
 
 
 def _now_utc() -> datetime:
@@ -195,6 +202,67 @@ def _verify_otp_value(phone_number: str, code: str) -> Optional[str]:
     return phone_number
 
 
+def _login_lockout_key_for_account(account_key: str) -> str:
+    return f"account:{account_key}"
+
+
+def _login_lockout_key_for_ip(ip_address: str) -> str:
+    return f"ip:{ip_address}"
+
+
+def _get_client_ip(request: Request) -> str:
+    forwarded = request.headers.get("x-forwarded-for")
+    if forwarded:
+        return forwarded.split(",")[0].strip() or request.client.host if request.client else "unknown"
+    return request.client.host if request.client else "unknown"
+
+
+def _check_login_rate_limit(account_key: str, ip_address: str) -> None:
+    now = _now_utc()
+
+    for key, lockout_until in list(_login_lockouts.items()):
+        if now >= lockout_until:
+            _login_lockouts.pop(key, None)
+
+    account_lockout_key = _login_lockout_key_for_account(account_key)
+    ip_lockout_key = _login_lockout_key_for_ip(ip_address)
+
+    if account_lockout_key in _login_lockouts and now < _login_lockouts[account_lockout_key]:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=f"Too many login attempts for this account. Please try again in {_LOGIN_LOCKOUT_SECONDS // 60} minutes.",
+        )
+
+    if ip_lockout_key in _login_lockouts and now < _login_lockouts[ip_lockout_key]:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=f"Too many login attempts from this network. Please try again in {_LOGIN_LOCKOUT_SECONDS // 60} minutes.",
+        )
+
+
+def _record_failed_login(account_key: str, ip_address: str) -> None:
+    now = _now_utc()
+    account_attempts = [ts for ts in _login_failures_by_account.get(account_key, []) if now - ts < timedelta(seconds=_LOGIN_FAILURE_WINDOW_SECONDS)]
+    account_attempts.append(now)
+    _login_failures_by_account[account_key] = account_attempts
+
+    ip_attempts = [ts for ts in _login_failures_by_ip.get(ip_address, []) if now - ts < timedelta(seconds=_LOGIN_FAILURE_WINDOW_SECONDS)]
+    ip_attempts.append(now)
+    _login_failures_by_ip[ip_address] = ip_attempts
+
+    if len(account_attempts) >= _LOGIN_FAILURE_LIMIT_PER_ACCOUNT:
+        _login_lockouts[_login_lockout_key_for_account(account_key)] = now + timedelta(seconds=_LOGIN_LOCKOUT_SECONDS)
+    if len(ip_attempts) >= _LOGIN_FAILURE_LIMIT_PER_IP:
+        _login_lockouts[_login_lockout_key_for_ip(ip_address)] = now + timedelta(seconds=_LOGIN_LOCKOUT_SECONDS)
+
+
+def _clear_successful_login(account_key: str, ip_address: str) -> None:
+    _login_failures_by_account.pop(account_key, None)
+    _login_failures_by_ip.pop(ip_address, None)
+    _login_lockouts.pop(_login_lockout_key_for_account(account_key), None)
+    _login_lockouts.pop(_login_lockout_key_for_ip(ip_address), None)
+
+
 def _send_otp_for_phone(phone_number: str, purpose: str) -> str:
     now = _now_utc()
     history = _otp_send_history.get(phone_number, [])
@@ -238,21 +306,27 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
 
 
 @router.post("/login", response_model=ApiResponse[dict])
-def login(payload: LoginRequest, db: Session = Depends(get_db)):
+def login(payload: LoginRequest, request: Request, db: Session = Depends(get_db)):
     if not payload.email and not payload.phone_number:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email or phone number is required",
         )
 
+    ip_address = _get_client_ip(request)
+    account_key = str(payload.email or payload.phone_number or "unknown").strip().lower()
+    _check_login_rate_limit(account_key, ip_address)
+
     user = _find_user_for_login(db, payload)
     if user is None:
+        _record_failed_login(account_key, ip_address)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
         )
 
     if user.password_hash is None or not verify_password(payload.password, user.password_hash):
+        _record_failed_login(account_key, ip_address)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
@@ -263,6 +337,7 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
     if not user.is_active:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account is inactive")
 
+    _clear_successful_login(account_key, ip_address)
     auth_payload = _issue_token_pair(db, user).model_dump()
     auth_payload["user"] = _serialize_user(user)
     return ApiResponse(success=True, message="Login successful", data=auth_payload)
