@@ -34,7 +34,7 @@ python -c "from app.db.seed import seed_all; seed_all()"
 
 The seed script creates the demo worker account with the credentials below:
 
-- Email: demo.worker@fixflow.local
+- Email: demo.worker@fixflow.com
 - Password: DemoWorker@123
 
 This account is idempotent; running the seed again will not create duplicate service categories or duplicate worker records.

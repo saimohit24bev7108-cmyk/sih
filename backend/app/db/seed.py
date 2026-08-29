@@ -26,7 +26,7 @@ def seed_service_categories(db: Session) -> None:
 
 
 def seed_worker_demo(db: Session) -> None:
-    dummy_email = "demo.worker@fixflow.local"
+    dummy_email = "demo.worker@fixflow.com"
     user = db.query(User).filter_by(email=dummy_email).first()
 
     if user is None:

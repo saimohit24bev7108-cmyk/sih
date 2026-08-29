@@ -19,7 +19,7 @@ interface LoginPayload {
 }
 
 interface AuthContextType extends AuthState {
-  login: (role: UserRole, payload?: string | LoginPayload) => Promise<void>;
+  login: (role: UserRole, payload?: LoginPayload) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -41,16 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const login = async (role: UserRole, payload?: string | LoginPayload) => {
-    if (typeof payload === 'string') {
-      setAuth({
-        isLoggedIn: true,
-        role,
-        userName: payload || (role === 'admin' ? 'Admin User' : role === 'worker' ? 'Rajesh Kumar' : 'Priya Sharma'),
-      });
-      return;
-    }
-
+  const login = async (role: UserRole, payload?: LoginPayload) => {
     if (!payload) {
       throw new Error('Authentication details are required');
     }
