@@ -71,8 +71,9 @@ export function Home() {
       </section>
 
       {/* Services */}
-      <section id="services" className="px-6 md:px-12 py-16 bg-white">
-        <div className="max-w-[1400px] mx-auto">
+      <section id="services" className="relative overflow-hidden px-6 md:px-12 py-16 bg-gradient-to-b from-sky-50 via-white to-white">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.12),transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(14,165,233,0.08),transparent_28%)]" />
+        <div className="relative max-w-[1400px] mx-auto">
           <h2 className="text-[28px] font-bold text-[#1a202c] mb-2">Our Services</h2>
           <div className="w-12 h-1 bg-yellow-400 mb-10 rounded-full" />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -90,7 +91,7 @@ export function Home() {
                 whileHover={reduceMotion ? undefined : { scale: 1.03 }}
                 whileTap={reduceMotion ? undefined : { scale: 0.98 }}
                 onClick={() => navigate(`/services/${svc.id}`)}
-                className="group rounded-2xl bg-white border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-0.5 transition-all text-left flex justify-between overflow-hidden"
+                className="group rounded-2xl bg-white/90 border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-0.5 transition-all text-left flex justify-between overflow-hidden backdrop-blur-sm"
               >
                 <div className="p-6 flex flex-col justify-between h-full">
                   <div>

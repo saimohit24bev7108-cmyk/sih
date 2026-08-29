@@ -1,0 +1,9 @@
+fastapi==0.109.2
+uvicorn==0.27.1
+sqlalchemy==2.0.25
+psycopg2-binary==2.9.9
+alembic==1.13.1
+pydantic==2.6.1
+pydantic-settings==2.1.0
+geoalchemy2==0.14.3
+passlib[bcrypt]==1.7.4
