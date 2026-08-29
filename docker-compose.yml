@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   db:
-    image: postgres:15-alpine
+    image: postgis/postgis:15-3.3-alpine
     environment:
       POSTGRES_USER: fixflow_user
       POSTGRES_PASSWORD: fixflow_password
