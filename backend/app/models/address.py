@@ -1,5 +1,6 @@
 from geoalchemy2 import Geography
 from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
 
 from app.db.session import Base
 
@@ -17,3 +18,5 @@ class Address(Base):
         Geography(geometry_type="POINT", srid=4326, spatial_index=True),
         nullable=True,
     )
+
+    user = relationship("User", back_populates="addresses")

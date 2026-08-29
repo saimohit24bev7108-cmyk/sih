@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 
+from app.core.security import get_password_hash
 from app.db.session import SessionLocal
 from app.models.service_category import ServiceCategory
 from app.models.user import User
@@ -32,13 +33,16 @@ def seed_worker_demo(db: Session) -> None:
         user = User(
             email=dummy_email,
             phone_number="+919876543210",
-            password_hash="$2b$12$examplehashplaceholder",
+            password_hash=get_password_hash("DemoWorker@123"),
             role="worker",
             is_active=True,
         )
         db.add(user)
         db.commit()
         db.refresh(user)
+    else:
+        user.password_hash = get_password_hash("DemoWorker@123")
+        db.add(user)
 
     profile = db.query(WorkerProfile).filter_by(user_id=user.id).first()
     if profile is None:
@@ -52,7 +56,8 @@ def seed_worker_demo(db: Session) -> None:
             current_location="POINT(77.5946 12.9716)",
         )
         db.add(profile)
-        db.commit()
+
+    db.commit()
 
 
 def seed_all() -> None:

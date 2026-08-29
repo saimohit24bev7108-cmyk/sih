@@ -1,5 +1,6 @@
 from geoalchemy2 import Geography
 from sqlalchemy import ARRAY, CheckConstraint, Column, Float, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
 
 from app.db.session import Base
 
@@ -24,3 +25,5 @@ class WorkerProfile(Base):
         Geography(geometry_type="POINT", srid=4326, spatial_index=True),
         nullable=True,
     )
+
+    user = relationship("User", back_populates="worker_profile")

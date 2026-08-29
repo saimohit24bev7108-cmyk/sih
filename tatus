@@ -1,0 +1,163 @@
+[1mdiff --git a/alembic.ini b/alembic.ini[m
+[1mindex c10d4ca..c6db262 100644[m
+[1m--- a/alembic.ini[m
+[1m+++ b/alembic.ini[m
+[36m@@ -12,7 +12,7 @@[m [mscript_location = alembic[m
+ [m
+ # sys.path path, will be prepended to sys.path if present.[m
+ # defaults to the current working directory.[m
+[31m-prepend_sys_path = .[m
+[32m+[m[32mprepend_sys_path = backend[m
+ [m
+ # timezone to use when rendering the date within the migration file[m
+ # as well as the filename.[m
+[1mdiff --git a/backend/app/__pycache__/main.cpython-312.pyc b/backend/app/__pycache__/main.cpython-312.pyc[m
+[1mindex 3c315a2..e3e9b48 100644[m
+Binary files a/backend/app/__pycache__/main.cpython-312.pyc and b/backend/app/__pycache__/main.cpython-312.pyc differ
+[1mdiff --git a/backend/app/db/__pycache__/base.cpython-312.pyc b/backend/app/db/__pycache__/base.cpython-312.pyc[m
+[1mindex d43a1ba..78beae2 100644[m
+Binary files a/backend/app/db/__pycache__/base.cpython-312.pyc and b/backend/app/db/__pycache__/base.cpython-312.pyc differ
+[1mdiff --git a/backend/app/db/__pycache__/seed.cpython-312.pyc b/backend/app/db/__pycache__/seed.cpython-312.pyc[m
+[1mindex 00a12df..e1340a9 100644[m
+Binary files a/backend/app/db/__pycache__/seed.cpython-312.pyc and b/backend/app/db/__pycache__/seed.cpython-312.pyc differ
+[1mdiff --git a/backend/app/db/base.py b/backend/app/db/base.py[m
+[1mindex 7fcaa29..c70096a 100644[m
+[1m--- a/backend/app/db/base.py[m
+[1m+++ b/backend/app/db/base.py[m
+[36m@@ -4,3 +4,4 @@[m [mfrom app.models.worker_profile import WorkerProfile[m
+ from app.models.customer_profile import CustomerProfile[m
+ from app.models.address import Address[m
+ from app.models.service_category import ServiceCategory[m
+[32m+[m[32mfrom app.models.token import RefreshToken[m
+[1mdiff --git a/backend/app/db/seed.py b/backend/app/db/seed.py[m
+[1mindex 2d85e0e..f16a5b6 100644[m
+[1m--- a/backend/app/db/seed.py[m
+[1m+++ b/backend/app/db/seed.py[m
+[36m@@ -1,5 +1,6 @@[m
+ from sqlalchemy.orm import Session[m
+ [m
+[32m+[m[32mfrom app.core.security import get_password_hash[m
+ from app.db.session import SessionLocal[m
+ from app.models.service_category import ServiceCategory[m
+ from app.models.user import User[m
+[36m@@ -32,13 +33,16 @@[m [mdef seed_worker_demo(db: Session) -> None:[m
+         user = User([m
+             email=dummy_email,[m
+             phone_number="+919876543210",[m
+[31m-            password_hash="$2b$12$examplehashplaceholder",[m
+[32m+[m[32m            password_hash=get_password_hash("DemoWorker@123"),[m
+             role="worker",[m
+             is_active=True,[m
+         )[m
+         db.add(user)[m
+         db.commit()[m
+         db.refresh(user)[m
+[32m+[m[32m    else:[m
+[32m+[m[32m        user.password_hash = get_password_hash("DemoWorker@123")[m
+[32m+[m[32m        db.add(user)[m
+ [m
+     profile = db.query(WorkerProfile).filter_by(user_id=user.id).first()[m
+     if profile is None:[m
+[36m@@ -52,7 +56,8 @@[m [mdef seed_worker_demo(db: Session) -> None:[m
+             current_location="POINT(77.5946 12.9716)",[m
+         )[m
+         db.add(profile)[m
+[31m-        db.commit()[m
+[32m+[m
+[32m+[m[32m    db.commit()[m
+ [m
+ [m
+ def seed_all() -> None:[m
+[1mdiff --git a/backend/app/main.py b/backend/app/main.py[m
+[1mindex f26f169..a2a1ec1 100644[m
+[1m--- a/backend/app/main.py[m
+[1m+++ b/backend/app/main.py[m
+[36m@@ -1,7 +1,7 @@[m
+ from fastapi import FastAPI[m
+ from fastapi.middleware.cors import CORSMiddleware[m
+ [m
+[31m-from app.api.routes import auth[m
+[32m+[m[32mfrom app.api.routes import auth, profiles[m
+ from app.core.config import settings[m
+ from app.core.exceptions import global_exception_handler[m
+ [m
+[36m@@ -19,6 +19,7 @@[m [mapp.add_middleware([m
+ [m
+ app.add_exception_handler(Exception, global_exception_handler)[m
+ app.include_router(auth.router)[m
+[32m+[m[32mapp.include_router(profiles.router)[m
+ [m
+ [m
+ @app.get("/api/health")[m
+[1mdiff --git a/backend/app/models/__init__.py b/backend/app/models/__init__.py[m
+[1mindex 4327cfc..8e0f37f 100644[m
+[1m--- a/backend/app/models/__init__.py[m
+[1m+++ b/backend/app/models/__init__.py[m
+[36m@@ -2,4 +2,5 @@[m [mfrom app.models.user import User[m
+ from app.models.worker_profile import WorkerProfile[m
+ from app.models.customer_profile import CustomerProfile[m
+ from app.models.address import Address[m
+[32m+[m[32mfrom app.models.token import RefreshToken[m
+ from app.models.service_category import ServiceCategory[m
+[1mdiff --git a/backend/app/models/__pycache__/__init__.cpython-312.pyc b/backend/app/models/__pycache__/__init__.cpython-312.pyc[m
+[1mindex 216644a..fcc497f 100644[m
+Binary files a/backend/app/models/__pycache__/__init__.cpython-312.pyc and b/backend/app/models/__pycache__/__init__.cpython-312.pyc differ
+[1mdiff --git a/backend/app/models/__pycache__/address.cpython-312.pyc b/backend/app/models/__pycache__/address.cpython-312.pyc[m
+[1mindex 1cc90d1..b897384 100644[m
+Binary files a/backend/app/models/__pycache__/address.cpython-312.pyc and b/backend/app/models/__pycache__/address.cpython-312.pyc differ
+[1mdiff --git a/backend/app/models/__pycache__/customer_profile.cpython-312.pyc b/backend/app/models/__pycache__/customer_profile.cpython-312.pyc[m
+[1mindex 4eb8761..885725d 100644[m
+Binary files a/backend/app/models/__pycache__/customer_profile.cpython-312.pyc and b/backend/app/models/__pycache__/customer_profile.cpython-312.pyc differ
+[1mdiff --git a/backend/app/models/__pycache__/worker_profile.cpython-312.pyc b/backend/app/models/__pycache__/worker_profile.cpython-312.pyc[m
+[1mindex 60477c2..b8fe138 100644[m
+Binary files a/backend/app/models/__pycache__/worker_profile.cpython-312.pyc and b/backend/app/models/__pycache__/worker_profile.cpython-312.pyc differ
+[1mdiff --git a/backend/app/models/address.py b/backend/app/models/address.py[m
+[1mindex 0884bcc..bbfb346 100644[m
+[1m--- a/backend/app/models/address.py[m
+[1m+++ b/backend/app/models/address.py[m
+[36m@@ -1,5 +1,6 @@[m
+ from geoalchemy2 import Geography[m
+ from sqlalchemy import Column, ForeignKey, Integer, String[m
+[32m+[m[32mfrom sqlalchemy.orm import relationship[m
+ [m
+ from app.db.session import Base[m
+ [m
+[36m@@ -17,3 +18,5 @@[m [mclass Address(Base):[m
+         Geography(geometry_type="POINT", srid=4326, spatial_index=True),[m
+         nullable=True,[m
+     )[m
+[32m+[m
+[32m+[m[32m    user = relationship("User", back_populates="addresses")[m
+[1mdiff --git a/backend/app/models/customer_profile.py b/backend/app/models/customer_profile.py[m
+[1mindex e758bbe..53e0347 100644[m
+[1m--- a/backend/app/models/customer_profile.py[m
+[1m+++ b/backend/app/models/customer_profile.py[m
+[36m@@ -1,4 +1,5 @@[m
+ from sqlalchemy import Column, ForeignKey, Integer, String[m
+[32m+[m[32mfrom sqlalchemy.orm import relationship[m
+ [m
+ from app.db.session import Base[m
+ [m
+[36m@@ -9,3 +10,5 @@[m [mclass CustomerProfile(Base):[m
+     id = Column(Integer, primary_key=True, index=True)[m
+     user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)[m
+     name = Column(String, nullable=True)[m
+[32m+[m
+[32m+[m[32m    user = relationship("User", back_populates="customer_profile")[m
+[1mdiff --git a/backend/app/models/worker_profile.py b/backend/app/models/worker_profile.py[m
+[1mindex 9990d32..d6a8457 100644[m
+[1m--- a/backend/app/models/worker_profile.py[m
+[1m+++ b/backend/app/models/worker_profile.py[m
+[36m@@ -1,5 +1,6 @@[m
+ from geoalchemy2 import Geography[m
+ from sqlalchemy import ARRAY, CheckConstraint, Column, Float, ForeignKey, Integer, String[m
+[32m+[m[32mfrom sqlalchemy.orm import relationship[m
+ [m
+ from app.db.session import Base[m
+ [m
+[36m@@ -24,3 +25,5 @@[m [mclass WorkerProfile(Base):[m
+         Geography(geometry_type="POINT", srid=4326, spatial_index=True),[m
+         nullable=True,[m
+     )[m
+[32m+[m
+[32m+[m[32m    user = relationship("User", back_populates="worker_profile")[m
