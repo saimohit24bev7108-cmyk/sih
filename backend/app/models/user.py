@@ -1,4 +1,5 @@
 from sqlalchemy import Boolean, CheckConstraint, Column, DateTime, Integer, String
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from app.db.session import Base
@@ -7,14 +8,18 @@ from app.db.session import Base
 class User(Base):
     __tablename__ = "users"
     __table_args__ = (
-        CheckConstraint("role IN ('customer', 'worker', 'admin')", name="users_role_check"),
+        CheckConstraint("role IN ('customer', 'worker', 'admin')", name="ck_users_role"),
     )
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
     phone_number = Column(String, unique=True, nullable=True)
-    password_hash = Column(String, nullable=False)
+    password_hash = Column(String, nullable=True)  # nullable: OTP-only users have no password
     role = Column(String, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     is_active = Column(Boolean, default=True)
+
+    worker_profile = relationship("WorkerProfile", back_populates="user", uselist=False)
+    customer_profile = relationship("CustomerProfile", back_populates="user", uselist=False)
+    addresses = relationship("Address", back_populates="user")

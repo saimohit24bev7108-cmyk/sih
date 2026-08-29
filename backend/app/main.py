@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.routes import auth
 from app.core.config import settings
 from app.core.exceptions import global_exception_handler
 
@@ -15,6 +16,7 @@ app.add_middleware(
 )
 
 app.add_exception_handler(Exception, global_exception_handler)
+app.include_router(auth.router)
 
 
 @app.get("/api/health")
