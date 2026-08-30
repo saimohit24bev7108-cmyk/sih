@@ -4,7 +4,3 @@ from app.models.customer_profile import CustomerProfile
 from app.models.address import Address
 from app.models.token import RefreshToken
 from app.models.service_category import ServiceCategory
-from app.models.service_request import ServiceRequest
-from app.models.booking import Booking
-from app.models.booking_status_history import BookingStatusHistory
-from app.models.idempotency_key import IdempotencyKey

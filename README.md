@@ -1,4 +1,4 @@
-# FixFlow Backend - Layer 4 Booking Engine
+# FixFlow Backend - Layer 3 Database Foundation
 
 Production-ready FastAPI + PostgreSQL/PostGIS backend foundation for **FixFlow** (SIH26089).
 
@@ -87,14 +87,6 @@ All demo accounts are pre-seeded with real bcrypt password hashes:
 | `PATCH` | `/api/admin/workers/{id}/verify` | Approve or reject worker application | `admin` |
 | `POST` | `/api/service-requests` | Create service request with PostGIS POINT | `customer` |
 | `GET` | `/api/service-requests` | List customer's service requests | `customer` |
-| `GET` | `/api/service-requests/{id}` | Get specific service request | `customer` |
-| `GET` | `/api/service-requests/{id}/nearby-workers` | PostGIS ST_DWithin worker search | `customer` |
-| `POST` | `/api/bookings` | Idempotent Booking creation | `customer` |
-| `GET` | `/api/bookings` | List active user bookings | Any Authenticated |
-| `GET` | `/api/bookings/{id}` | Get specific booking | Any Authenticated |
-| `POST` | `/api/bookings/{id}/accept` | Worker accepts a booking | `worker` |
-| `PATCH` | `/api/bookings/{id}/status` | Safe transition via State Machine | `worker` |
-| `PATCH` | `/api/bookings/{id}/cancel` | Cancel booking | `customer` or `worker` |
 
 ---
 
@@ -112,5 +104,4 @@ alembic upgrade head
 
 # Run automated verification test suite
 python test_layer3_verification.py
-python test_layer4_verification.py
 ```
