@@ -5,6 +5,9 @@ from app.db.session import SessionLocal
 from app.models.service_category import ServiceCategory
 from app.models.user import User
 from app.models.worker_profile import WorkerProfile
+from app.models.service_request import ServiceRequest
+from app.models.booking import Booking
+from app.models.address import Address
 
 
 def seed_service_categories(db: Session) -> None:
@@ -60,11 +63,62 @@ def seed_worker_demo(db: Session) -> None:
     db.commit()
 
 
+def seed_layer4_demo(db: Session) -> None:
+    # Get a customer and a worker
+    # In the demo setup from DEV_SETUP, customer@fixflow.local and suresh@worker.com are the ones.
+    customer = db.query(User).filter_by(email="customer@fixflow.local").first()
+    worker = db.query(User).filter_by(email="demo.worker@fixflow.com").first()
+    category = db.query(ServiceCategory).filter_by(name="Plumbing").first()
+
+    if customer and worker and category:
+        # Create an address for the customer if they don't have one
+        address = db.query(Address).filter_by(user_id=customer.id).first()
+        if not address:
+            address = Address(
+                user_id=customer.id,
+                street="123 Demo Street",
+                city="Bengaluru",
+                state="Karnataka",
+                postal_code="560001",
+                coordinates="POINT(77.5946 12.9716)"
+            )
+            db.add(address)
+            db.commit()
+            db.refresh(address)
+
+        # Create a service request if one doesn't exist
+        sr = db.query(ServiceRequest).filter_by(customer_id=customer.id, category_id=category.id).first()
+        if not sr:
+            sr = ServiceRequest(
+                customer_id=customer.id,
+                category_id=category.id,
+                description="Leaking pipe in the kitchen",
+                location="POINT(77.5946 12.9716)",
+                address_id=address.id,
+                status="matched"
+            )
+            db.add(sr)
+            db.commit()
+            db.refresh(sr)
+
+            # Create an accepted booking for this service request
+            booking = Booking(
+                service_request_id=sr.id,
+                customer_id=customer.id,
+                worker_id=worker.id,
+                status="ACCEPTED",
+                version=1
+            )
+            db.add(booking)
+            db.commit()
+
+
 def seed_all() -> None:
     db = SessionLocal()
     try:
         seed_service_categories(db)
         seed_worker_demo(db)
+        seed_layer4_demo(db)
     finally:
         db.close()
 

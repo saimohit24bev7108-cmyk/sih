@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import auth, profiles
+from app.api.routes import auth, profiles, service_requests, bookings
 from app.core.config import settings
 from app.core.exceptions import global_exception_handler
 
@@ -20,7 +20,8 @@ app.add_middleware(
 app.add_exception_handler(Exception, global_exception_handler)
 app.include_router(auth.router)
 app.include_router(profiles.router)
-
+app.include_router(service_requests.router)
+app.include_router(bookings.router)
 
 @app.get("/api/health")
 def health_check():

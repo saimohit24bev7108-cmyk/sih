@@ -1,6 +1,6 @@
 # Developer Setup & Database Initialization Guide
 
-This document details the exact sequence required to initialize, migrate, seed, and verify the FixFlow Layer 3 backend database.
+This document details the exact sequence required to initialize, migrate, seed, and verify the FixFlow Layer 4 backend database.
 
 ## 1. Automated Initialization Commands
 
@@ -8,7 +8,7 @@ This document details the exact sequence required to initialize, migrate, seed, 
 # Step 1: Start PostgreSQL + PostGIS 15 container in background
 docker compose up -d
 
-# Step 2: Apply the full Layer 3 database migration
+# Step 2: Apply the full Layer 4 database migration
 alembic upgrade head
 
 # Step 3: Seed initial service categories, admin, customer, and workers (idempotent)
@@ -35,5 +35,6 @@ alembic upgrade head
 
 ```bash
 python test_layer3_verification.py
+python test_layer4_verification.py
 ```
-This runs 17 automated tests verifying schema tables, seed idempotency, authentication with real bcrypt hashes, role-restricted profile CRUD, category listing, worker list/detail/self-update, and admin verification workflow.
+These scripts run automated tests verifying schema tables, seed idempotency, authentication with real bcrypt hashes, role-restricted profile CRUD, category listing, worker list/detail/self-update, admin verification workflow, service request creation, idempotency locking, booking creation, and state-machine enforced status transitions.
