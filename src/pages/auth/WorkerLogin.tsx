@@ -41,8 +41,8 @@ export function WorkerLogin() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[hsl(var(--background))] px-4 overflow-x-hidden">
-      <div className="w-full max-w-md">
+    <div className="auth-page">
+      <div className="auth-shell">
         <Link
           to="/"
           className="inline-flex items-center gap-2 text-sm text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] mb-6 transition-colors"

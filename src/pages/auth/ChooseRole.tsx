@@ -27,6 +27,8 @@ export function ChooseRole({ mode }: ChooseRoleProps) {
   const reduceMotion = useReducedMotion();
   const preselectedRole = searchParams.get('role');
   const roles = mode === 'login' ? LOGIN_ROLES : REGISTER_ROLES;
+  const topRoles = roles.filter(role => role.id !== 'admin');
+  const adminRole = mode === 'login' ? LOGIN_ROLES.find(role => role.id === 'admin') : undefined;
 
   if (preselectedRole) {
     const match = roles.find(r => r.id === preselectedRole);
@@ -56,8 +58,8 @@ export function ChooseRole({ mode }: ChooseRoleProps) {
           </div>
 
           <div className="w-full flex justify-center">
-            <div className="grid w-full max-w-[760px] grid-cols-1 justify-items-center gap-5 md:grid-cols-2 lg:gap-6">
-              {roles.map((role, index) => (
+            <div className="grid w-full max-w-[760px] grid-cols-1 gap-5 md:grid-cols-2 md:gap-6">
+              {topRoles.map((role, index) => (
                 <motion.button
                   key={role.id}
                   initial={reduceMotion ? false : { opacity: 0, y: 18 }}
@@ -70,7 +72,7 @@ export function ChooseRole({ mode }: ChooseRoleProps) {
                   whileHover={reduceMotion ? undefined : { y: -4, scale: 1.01 }}
                   whileTap={reduceMotion ? undefined : { scale: 0.99 }}
                   onClick={() => handleRoleSelect(role.path, role.id)}
-                  className={`group flex h-full min-h-[220px] w-full max-w-[330px] flex-col items-center justify-center rounded-2xl border-2 p-6 text-center transition-all ${
+                  className={`group flex h-full min-h-[220px] w-full max-w-[330px] flex-col items-center justify-center rounded-2xl border-2 p-6 text-center transition-all justify-self-center ${
                     selectedRole === role.id
                       ? 'border-blue-500 bg-blue-50 shadow-[0_0_0_3px_rgba(59,130,246,0.08)]'
                       : 'border-blue-100 bg-blue-50/50 shadow-sm hover:border-blue-400 hover:bg-blue-50 hover:shadow-md'
@@ -91,6 +93,41 @@ export function ChooseRole({ mode }: ChooseRoleProps) {
                   </div>
                 </motion.button>
               ))}
+
+              {adminRole && (
+                <motion.button
+                  key={adminRole.id}
+                  initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+                  animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+                  transition={
+                    reduceMotion
+                      ? { duration: 0 }
+                      : { duration: 0.32, delay: topRoles.length * 0.08, ease: 'easeOut' }
+                  }
+                  whileHover={reduceMotion ? undefined : { y: -4, scale: 1.01 }}
+                  whileTap={reduceMotion ? undefined : { scale: 0.99 }}
+                  onClick={() => handleRoleSelect(adminRole.path, adminRole.id)}
+                  className={`group flex h-full min-h-[220px] w-full max-w-[330px] flex-col items-center justify-center rounded-2xl border-2 p-6 text-center transition-all justify-self-center md:col-span-2 ${
+                    selectedRole === adminRole.id
+                      ? 'border-blue-500 bg-blue-50 shadow-[0_0_0_3px_rgba(59,130,246,0.08)]'
+                      : 'border-blue-100 bg-blue-50/50 shadow-sm hover:border-blue-400 hover:bg-blue-50 hover:shadow-md'
+                  }`}
+                >
+                  <motion.div
+                    className={`mb-5 flex h-16 w-16 items-center justify-center rounded-full transition-colors ${
+                      selectedRole === adminRole.id ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white'
+                    }`}
+                    whileHover={reduceMotion ? undefined : { rotate: 4 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {adminRole.icon}
+                  </motion.div>
+                  <div className="space-y-1">
+                    <h3 className="text-2xl font-bold text-blue-900">{adminRole.label}</h3>
+                    <p className="text-sm text-gray-600 leading-relaxed">{adminRole.desc}</p>
+                  </div>
+                </motion.button>
+              )}
             </div>
           </div>
         </div>
