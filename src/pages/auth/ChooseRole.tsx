@@ -42,7 +42,7 @@ export function ChooseRole({ mode }: ChooseRoleProps) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col bg-white overflow-x-hidden">
       <Navbar />
       <div className="flex-1 flex items-center justify-center px-4 py-16">
         <div className="w-full max-w-md">

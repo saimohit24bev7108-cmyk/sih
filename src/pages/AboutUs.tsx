@@ -157,7 +157,7 @@ export function AboutUs() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white overflow-x-hidden">
       <Navbar />
 
       <section className="max-w-3xl mx-auto px-6 pt-16 pb-12">
@@ -290,8 +290,8 @@ export function AboutUs() {
               <motion.li
                 key={item}
                 className="flex items-center gap-3 text-sm text-gray-800"
-                initial={reduceMotion ? false : { opacity: 0, x: -12 }}
-                whileInView={reduceMotion ? undefined : { opacity: 1, x: 0 }}
+                initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+                whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
                 viewport={VIEWPORT}
                 transition={
                   reduceMotion

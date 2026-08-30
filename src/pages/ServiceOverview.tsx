@@ -32,7 +32,7 @@ export function ServiceOverview() {
 
   if (!service) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center overflow-x-hidden">
         <p className="text-[hsl(var(--muted-foreground))]">Service not found.</p>
       </div>
     );
@@ -48,14 +48,14 @@ export function ServiceOverview() {
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center bg-no-repeat relative"
+      className="min-h-screen bg-cover bg-center bg-no-repeat relative overflow-x-hidden"
       style={{ backgroundImage: `url('${BACKGROUNDS[category]}')` }}
     >
       <motion.section
         initial={reduceMotion ? false : { opacity: 0, y: 24 }}
         animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
         transition={reduceMotion ? { duration: 0 } : { duration: 0.42, ease: 'easeOut' }}
-        className="max-w-3xl px-6 py-16 ml-8 bg-white/90 rounded-2xl shadow-lg"
+        className="max-w-3xl mx-4 sm:mx-auto px-4 sm:px-6 py-16 bg-white/90 rounded-2xl shadow-lg"
       >
         <Link
           to="/"
@@ -77,8 +77,8 @@ export function ServiceOverview() {
             {service.includes.map((item, index) => (
               <motion.li
                 key={item}
-                initial={reduceMotion ? false : { opacity: 0, x: -10 }}
-                animate={reduceMotion ? undefined : { opacity: 1, x: 0 }}
+                initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+                animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
                 transition={
                   reduceMotion
                     ? { duration: 0 }

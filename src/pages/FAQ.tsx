@@ -23,7 +23,7 @@ export function FAQ() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white overflow-x-hidden">
       <Navbar />
       <section className="max-w-3xl mx-auto px-6 py-16">
         <h1 className="text-3xl font-extrabold text-black mb-8">Frequently Asked Questions</h1>

@@ -35,7 +35,7 @@ export function CustomerRegister() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[hsl(var(--background))] px-4 py-8">
+    <div className="min-h-screen flex items-center justify-center bg-[hsl(var(--background))] px-4 py-8 overflow-x-hidden">
       <div className="w-full max-w-md">
         <Link
           to="/"

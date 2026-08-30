@@ -18,7 +18,7 @@ export function Safety() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white overflow-x-hidden">
       <Navbar />
       <section className="max-w-3xl mx-auto px-6 pt-16 pb-32">
         <h1 className="text-3xl font-extrabold text-black mb-8">Your Safety Is Our Priority</h1>

@@ -41,7 +41,7 @@ export function WorkerLogin() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[hsl(var(--background))] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-[hsl(var(--background))] px-4 overflow-x-hidden">
       <div className="w-full max-w-md">
         <Link
           to="/"

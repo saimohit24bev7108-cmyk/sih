@@ -47,7 +47,7 @@ export function AdminDashboard() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto overflow-x-hidden">
         <h1 className="text-2xl font-extrabold text-[hsl(var(--foreground))] mb-6">Admin Dashboard</h1>
 
         {/* Stats */}

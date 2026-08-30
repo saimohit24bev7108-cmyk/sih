@@ -4,7 +4,7 @@ import { BadgeCheck, CalendarCheck, Lock, MapPin, Download, Smartphone, Wrench }
 
 export function WhatWeOffer() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white overflow-x-hidden">
       <Navbar />
 
       {/* What We Offer */}

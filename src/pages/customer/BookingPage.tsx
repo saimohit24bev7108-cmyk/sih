@@ -24,7 +24,7 @@ export function BookingPage() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-2xl mx-auto overflow-x-hidden">
         <button
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-sm text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] mb-6 transition-colors"

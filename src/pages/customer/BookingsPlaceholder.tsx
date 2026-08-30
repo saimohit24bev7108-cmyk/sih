@@ -4,7 +4,7 @@ import { mockBookings } from '@/data/mockData';
 export function BookingsPlaceholder() {
   return (
     <DashboardLayout>
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto overflow-x-hidden">
         <h1 className="text-2xl font-extrabold text-[hsl(var(--foreground))] mb-6">My Bookings</h1>
         <div className="space-y-3">
           {mockBookings.map((booking) => (

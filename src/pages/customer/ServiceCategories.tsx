@@ -12,7 +12,7 @@ export function ServiceCategories() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-5xl mx-auto overflow-x-hidden">
         <h1 className="text-2xl font-extrabold text-[hsl(var(--foreground))] mb-2">Service Categories</h1>
         <p className="text-[hsl(var(--muted-foreground))] mb-8">Choose a category to find the right professional</p>
 

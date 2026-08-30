@@ -25,7 +25,7 @@ export function Home() {
     : { duration: 0.45, ease: 'easeOut' as const };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 font-sans">
+    <div className="min-h-screen bg-white dark:bg-gray-900 font-sans overflow-x-hidden">
       <Navbar />
 
       {/* Hero */}

@@ -5,7 +5,7 @@ export function LandingPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[hsl(var(--background))]">
+    <div className="min-h-screen bg-[hsl(var(--background))] overflow-x-hidden">
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 border-b border-[hsl(var(--border))]">
         <div className="flex items-center gap-2">

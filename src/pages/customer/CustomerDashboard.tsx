@@ -14,7 +14,7 @@ export function CustomerDashboard() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto overflow-x-hidden">
         <h1 className="text-2xl font-extrabold text-[hsl(var(--foreground))] mb-6">Welcome back, Priya! 👋</h1>
 
         {/* Stats */}

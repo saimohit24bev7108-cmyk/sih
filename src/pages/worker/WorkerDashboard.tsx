@@ -13,7 +13,7 @@ export function WorkerDashboard() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto overflow-x-hidden">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <h1 className="text-2xl font-extrabold text-[hsl(var(--foreground))]">Worker Dashboard</h1>
           <div className="flex items-center gap-3">
