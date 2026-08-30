@@ -1,8 +1,9 @@
-import { motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { Eye, EyeOff, Phone, Mail, ArrowLeft } from 'lucide-react';
+import { tapScale, hoverLift } from '@/lib/motion';
 
 export function CustomerLogin() {
   const [mode, setMode] = useState<'password' | 'otp'>('password');
@@ -43,12 +44,12 @@ export function CustomerLogin() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[hsl(var(--background))] px-4">
       <div className="w-full max-w-md">
-        <button
-          onClick={() => navigate('/')}
-          className="flex items-center gap-2 text-sm text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] mb-6 transition-colors"
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-sm text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] mb-6 transition-colors"
         >
           <ArrowLeft size={16} /> Back to Home
-        </button>
+        </Link>
 
         <motion.div
           initial={reduceMotion ? false : { opacity: 0, y: 20 }}
@@ -60,7 +61,9 @@ export function CustomerLogin() {
           <p className="text-sm text-[hsl(var(--muted-foreground))] text-center mb-6">Welcome back! Sign in to your account</p>
 
           <div className="flex rounded-lg bg-[hsl(var(--secondary))] p-1 mb-6">
-            <button
+            <motion.button
+              whileTap={reduceMotion ? undefined : tapScale}
+              whileHover={reduceMotion ? undefined : hoverLift}
               onClick={() => setMode('password')}
               className={`flex-1 py-2 rounded-md text-sm font-medium transition-colors ${
                 mode === 'password'
@@ -69,8 +72,10 @@ export function CustomerLogin() {
               }`}
             >
               Password
-            </button>
-            <button
+            </motion.button>
+            <motion.button
+              whileTap={reduceMotion ? undefined : tapScale}
+              whileHover={reduceMotion ? undefined : hoverLift}
               onClick={() => setMode('otp')}
               className={`flex-1 py-2 rounded-md text-sm font-medium transition-colors ${
                 mode === 'otp'
@@ -79,11 +84,19 @@ export function CustomerLogin() {
               }`}
             >
               OTP
-            </button>
+            </motion.button>
           </div>
 
-          {mode === 'password' ? (
-            <div className="space-y-4">
+          <AnimatePresence mode="wait">
+            {mode === 'password' ? (
+              <motion.div
+                key="password"
+                initial={reduceMotion ? { opacity: 1 } : { opacity: 0, y: 8, scale: 0.98 }}
+                animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+                exit={reduceMotion ? { opacity: 1 } : { opacity: 0, y: -8, scale: 0.98 }}
+                transition={{ duration: 0.18, ease: 'easeOut' }}
+                className="space-y-4"
+              >
               <div>
                 <label className="block text-sm font-medium text-[hsl(var(--foreground))] mb-1.5">Email or Mobile</label>
                 <div className="relative">
@@ -117,20 +130,27 @@ export function CustomerLogin() {
                 </div>
               </div>
               <div className="text-right">
-                <button className="text-xs text-[hsl(var(--primary))] hover:underline">Forgot Password?</button>
+                <motion.button whileTap={reduceMotion ? undefined : tapScale} whileHover={reduceMotion ? undefined : hoverLift} className="text-xs text-[hsl(var(--primary))] hover:underline">Forgot Password?</motion.button>
               </div>
               <motion.button
                 onClick={handlePasswordLogin}
-                whileHover={reduceMotion ? undefined : { scale: 1.02 }}
-                whileTap={reduceMotion ? undefined : { scale: 0.98 }}
+                whileHover={reduceMotion ? undefined : hoverLift}
+                whileTap={reduceMotion ? undefined : tapScale}
                 transition={{ duration: 0.2 }}
                 className="w-full py-3 rounded-lg bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] font-semibold hover:opacity-90 transition-opacity"
               >
                 Login
               </motion.button>
-            </div>
-          ) : (
-            <div className="space-y-4">
+            </motion.div>
+            ) : (
+              <motion.div
+                key="otp"
+                initial={reduceMotion ? { opacity: 1 } : { opacity: 0, y: 8, scale: 0.98 }}
+                animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+                exit={reduceMotion ? { opacity: 1 } : { opacity: 0, y: -8, scale: 0.98 }}
+                transition={{ duration: 0.18, ease: 'easeOut' }}
+                className="space-y-4"
+              >
               <div>
                 <label className="block text-sm font-medium text-[hsl(var(--foreground))] mb-1.5">Mobile Number</label>
                 <div className="relative">
@@ -146,15 +166,16 @@ export function CustomerLogin() {
               </div>
               <motion.button
                 onClick={handleSendOTP}
-                whileHover={reduceMotion ? undefined : { scale: 1.02 }}
-                whileTap={reduceMotion ? undefined : { scale: 0.98 }}
+                whileHover={reduceMotion ? undefined : hoverLift}
+                whileTap={reduceMotion ? undefined : tapScale}
                 transition={{ duration: 0.2 }}
                 className="w-full py-3 rounded-lg bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] font-semibold hover:opacity-90 transition-opacity"
               >
                 Send OTP
               </motion.button>
-            </div>
-          )}
+            </motion.div>
+            )}
+          </AnimatePresence>
 
           <p className="text-sm text-center text-[hsl(var(--muted-foreground))] mt-6">
             Don't have an account?{' '}

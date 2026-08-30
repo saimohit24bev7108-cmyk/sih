@@ -1,5 +1,8 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import { AuthProvider } from '@/context/AuthContext';
+import { ThemeProvider } from '@/context/ThemeContext';
+import { PageWrapper } from '@/components/PageWrapper';
 
 // New pages
 import { Home } from '@/pages/Home';
@@ -37,59 +40,70 @@ import { WorkerPlaceholder } from '@/pages/worker/WorkerPlaceholder';
 import { AdminDashboard } from '@/pages/admin/AdminDashboard';
 import { AdminPlaceholder } from '@/pages/admin/AdminPlaceholder';
 
+function AnimatedRoutes() {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        {/* ===== New sitemap routes ===== */}
+        <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
+        <Route path="/faq" element={<PageWrapper><FAQ /></PageWrapper>} />
+        <Route path="/safety" element={<PageWrapper><Safety /></PageWrapper>} />
+        <Route path="/about-us" element={<PageWrapper><AboutUs /></PageWrapper>} />
+        <Route path="/what-we-offer" element={<PageWrapper><WhatWeOffer /></PageWrapper>} />
+        <Route path="/login" element={<PageWrapper><ChooseRole mode="login" /></PageWrapper>} />
+        <Route path="/register" element={<PageWrapper><ChooseRole mode="register" /></PageWrapper>} />
+        <Route path="/services/:category" element={<PageWrapper><ServiceOverview /></PageWrapper>} />
+
+        {/* ===== Existing Auth - Customer ===== */}
+        <Route path="/customer/login" element={<PageWrapper><CustomerLogin /></PageWrapper>} />
+        <Route path="/customer/register" element={<PageWrapper><CustomerRegister /></PageWrapper>} />
+
+        {/* ===== Existing Auth - Worker ===== */}
+        <Route path="/worker/login" element={<PageWrapper><WorkerLogin /></PageWrapper>} />
+        <Route path="/worker/register" element={<PageWrapper><WorkerRegister /></PageWrapper>} />
+
+        {/* ===== Existing Auth - Admin ===== */}
+        <Route path="/admin/login" element={<PageWrapper><AdminLogin /></PageWrapper>} />
+
+        {/* ===== OTP Verify ===== */}
+        <Route path="/otp-verify/:role" element={<PageWrapper><OTPVerify /></PageWrapper>} />
+
+        {/* ===== Customer Pages ===== */}
+        <Route path="/customer/dashboard" element={<PageWrapper><CustomerDashboard /></PageWrapper>} />
+        <Route path="/customer/services" element={<PageWrapper><ServiceCategories /></PageWrapper>} />
+        <Route path="/customer/service-request/:category" element={<PageWrapper><ServiceRequest /></PageWrapper>} />
+        <Route path="/customer/workers/:category" element={<PageWrapper><WorkerListing /></PageWrapper>} />
+        <Route path="/customer/booking/:workerId" element={<PageWrapper><BookingPage /></PageWrapper>} />
+        <Route path="/customer/bookings" element={<PageWrapper><BookingsPlaceholder /></PageWrapper>} />
+
+        {/* ===== Worker Pages ===== */}
+        <Route path="/worker/dashboard" element={<PageWrapper><WorkerDashboard /></PageWrapper>} />
+        <Route path="/worker/jobs" element={<PageWrapper><WorkerPlaceholder /></PageWrapper>} />
+        <Route path="/worker/earnings" element={<PageWrapper><WorkerPlaceholder /></PageWrapper>} />
+        <Route path="/worker/profile" element={<PageWrapper><WorkerPlaceholder /></PageWrapper>} />
+
+        {/* ===== Admin Pages ===== */}
+        <Route path="/admin/dashboard" element={<PageWrapper><AdminDashboard /></PageWrapper>} />
+        <Route path="/admin/workers" element={<PageWrapper><AdminPlaceholder /></PageWrapper>} />
+        <Route path="/admin/bookings" element={<PageWrapper><AdminPlaceholder /></PageWrapper>} />
+        <Route path="/admin/disputes" element={<PageWrapper><AdminPlaceholder /></PageWrapper>} />
+        <Route path="/admin/verifications" element={<PageWrapper><AdminPlaceholder /></PageWrapper>} />
+      </Routes>
+    </AnimatePresence>
+  );
+}
+
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* ===== New sitemap routes ===== */}
-          <Route path="/" element={<Home />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/safety" element={<Safety />} />
-          <Route path="/about-us" element={<AboutUs />} />
-          <Route path="/what-we-offer" element={<WhatWeOffer />} />
-          <Route path="/login" element={<ChooseRole mode="login" />} />
-          
-          <Route path="/register" element={<ChooseRole mode="register" />} />
-          <Route path="/services/:category" element={<ServiceOverview />} />
-
-          {/* ===== Existing Auth - Customer ===== */}
-          <Route path="/customer/login" element={<CustomerLogin />} />
-          <Route path="/customer/register" element={<CustomerRegister />} />
-
-          {/* ===== Existing Auth - Worker ===== */}
-          <Route path="/worker/login" element={<WorkerLogin />} />
-          <Route path="/worker/register" element={<WorkerRegister />} />
-
-          {/* ===== Existing Auth - Admin ===== */}
-          <Route path="/admin/login" element={<AdminLogin />} />
-
-          {/* ===== OTP Verify ===== */}
-          <Route path="/otp-verify/:role" element={<OTPVerify />} />
-
-          {/* ===== Customer Pages ===== */}
-          <Route path="/customer/dashboard" element={<CustomerDashboard />} />
-          <Route path="/customer/services" element={<ServiceCategories />} />
-          <Route path="/customer/service-request/:category" element={<ServiceRequest />} />
-          <Route path="/customer/workers/:category" element={<WorkerListing />} />
-          <Route path="/customer/booking/:workerId" element={<BookingPage />} />
-          <Route path="/customer/bookings" element={<BookingsPlaceholder />} />
-
-          {/* ===== Worker Pages ===== */}
-          <Route path="/worker/dashboard" element={<WorkerDashboard />} />
-          <Route path="/worker/jobs" element={<WorkerPlaceholder />} />
-          <Route path="/worker/earnings" element={<WorkerPlaceholder />} />
-          <Route path="/worker/profile" element={<WorkerPlaceholder />} />
-
-          {/* ===== Admin Pages ===== */}
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/workers" element={<AdminPlaceholder />} />
-          <Route path="/admin/bookings" element={<AdminPlaceholder />} />
-          <Route path="/admin/disputes" element={<AdminPlaceholder />} />
-          <Route path="/admin/verifications" element={<AdminPlaceholder />} />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <AnimatedRoutes />
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

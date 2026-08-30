@@ -1,5 +1,8 @@
+import { motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Home as HomeIcon } from 'lucide-react';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { tapScale, hoverLift } from '@/lib/motion';
 
 export function Navbar() {
   const navigate = useNavigate();
@@ -14,56 +17,61 @@ export function Navbar() {
       navigate('/');
       setTimeout(() => {
         document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
+      }, 250);
     }
   };
 
   return (
-    <nav className="flex items-center justify-between px-8 py-4 bg-white border-b border-gray-100 sticky top-0 z-50">
-      <button onClick={() => navigate('/')} className="flex items-center gap-2">
+    <nav className="flex items-center justify-between px-8 py-4 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700 sticky top-0 z-50">
+      <motion.button whileTap={tapScale} whileHover={hoverLift} onClick={() => navigate('/')} className="flex items-center gap-2">
         <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center">
           <HomeIcon size={24} className="text-white" />
         </div>
         <div className="text-left leading-tight">
-          <span className="text-xl font-bold text-blue-900">FixFlow</span>
-          <p className="text-[10px] text-gray-500 font-medium">Your Home Services Team!</p>
+          <span className="text-xl font-bold text-blue-900 dark:text-white">FixFlow</span>
+          <p className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">Your Home Services Team!</p>
         </div>
-      </button>
+      </motion.button>
 
       <div className="hidden md:flex items-center gap-8">
-        <button onClick={() => navigate('/')} className={`text-sm font-medium transition-colors ${isActive('/') ? 'text-blue-600 border-b-2 border-blue-600 pb-1' : 'text-gray-800 hover:text-blue-600'}`}>
+        <motion.button whileTap={tapScale} whileHover={hoverLift} onClick={() => navigate('/')} className={`text-sm font-medium transition-colors ${isActive('/') ? 'text-blue-600 border-b-2 border-blue-600 pb-1' : 'text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400'}`}>
           Home
-        </button>
-        <button onClick={scrollToServices} className="text-sm font-medium text-gray-800 hover:text-blue-600 transition-colors">
+        </motion.button>
+        <motion.button whileTap={tapScale} whileHover={hoverLift} onClick={scrollToServices} className="text-sm font-medium text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
           Services
-        </button>
-        <button onClick={() => navigate('/about-us')} className={`text-sm font-medium transition-colors ${isActive('/about-us') ? 'text-blue-600 border-b-2 border-blue-600 pb-1' : 'text-gray-800 hover:text-blue-600'}`}>
+        </motion.button>
+        <motion.button whileTap={tapScale} whileHover={hoverLift} onClick={() => navigate('/about-us')} className={`text-sm font-medium transition-colors ${isActive('/about-us') ? 'text-blue-600 border-b-2 border-blue-600 pb-1' : 'text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400'}`}>
         About Us
-        </button>
-        <button onClick={() => navigate('/safety')} className={`text-sm font-medium transition-colors ${isActive('/safety') ? 'text-blue-600 border-b-2 border-blue-600 pb-1' : 'text-gray-800 hover:text-blue-600'}`}>
+        </motion.button>
+        <motion.button whileTap={tapScale} whileHover={hoverLift} onClick={() => navigate('/safety')} className={`text-sm font-medium transition-colors ${isActive('/safety') ? 'text-blue-600 border-b-2 border-blue-600 pb-1' : 'text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400'}`}>
          Safety
-        </button>
-        <button onClick={() => navigate('/faq')} className={`text-sm font-medium transition-colors ${isActive('/faq') ? 'text-blue-600 border-b-2 border-blue-600 pb-1' : 'text-gray-800 hover:text-blue-600'}`}>
+        </motion.button>
+        <motion.button whileTap={tapScale} whileHover={hoverLift} onClick={() => navigate('/faq')} className={`text-sm font-medium transition-colors ${isActive('/faq') ? 'text-blue-600 border-b-2 border-blue-600 pb-1' : 'text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400'}`}>
           FAQs
-        </button>
-        <button className="text-sm font-medium text-gray-800 hover:text-blue-600 transition-colors">
+        </motion.button>
+        <motion.button whileTap={tapScale} whileHover={hoverLift} className="text-sm font-medium text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
           Contact Us
-        </button>
+        </motion.button>
       </div>
 
       <div className="flex items-center gap-4">
-        <button
+        <ThemeToggle />
+        <motion.button
+          whileTap={tapScale}
+          whileHover={hoverLift}
           onClick={() => navigate('/login')}
-          className="px-6 py-2.5 rounded-lg border border-blue-200 text-blue-600 text-sm font-semibold hover:bg-blue-50 transition-colors"
+          className="px-6 py-2.5 rounded-lg border border-blue-200 dark:border-blue-700 text-blue-600 dark:text-blue-300 text-sm font-semibold hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
         >
           Login
-        </button>
-        <button
+        </motion.button>
+        <motion.button
+          whileTap={tapScale}
+          whileHover={hoverLift}
           onClick={() => navigate('/register')}
           className="px-6 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors"
         >
           Register
-        </button>
+        </motion.button>
       </div>
     </nav>
   );

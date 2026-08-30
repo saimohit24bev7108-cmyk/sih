@@ -43,12 +43,12 @@ export function WorkerLogin() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[hsl(var(--background))] px-4">
       <div className="w-full max-w-md">
-        <button
-          onClick={() => navigate('/')}
-          className="flex items-center gap-2 text-sm text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] mb-6 transition-colors"
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-sm text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] mb-6 transition-colors"
         >
           <ArrowLeft size={16} /> Back to Home
-        </button>
+        </Link>
 
         <motion.div
           initial={reduceMotion ? false : { opacity: 0, y: 20 }}

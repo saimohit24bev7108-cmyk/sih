@@ -43,7 +43,9 @@ export function FAQ() {
                 }
                 className="border border-gray-200 rounded-lg overflow-hidden"
               >
-                <button
+                <motion.button
+                  whileTap={reduceMotion ? undefined : { scale: 0.97 }}
+                  whileHover={reduceMotion ? undefined : { scale: 1.02 }}
                   onClick={() => setOpenIndex(isOpen ? null : index)}
                   className="w-full text-left px-4 py-3 font-semibold text-black bg-gray-50 hover:bg-gray-100 flex items-center justify-between gap-3"
                 >
@@ -55,7 +57,7 @@ export function FAQ() {
                   >
                     <ChevronDown size={18} className="text-gray-600" />
                   </motion.span>
-                </button>
+                </motion.button>
                 <AnimatePresence initial={false}>
                   {isOpen && (
                     <motion.div

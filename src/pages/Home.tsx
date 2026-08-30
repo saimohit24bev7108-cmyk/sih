@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { Zap, Droplet, PaintRoller, Hammer, Sparkles, Settings, ArrowRight, Home as HomeIcon } from 'lucide-react';
+import { tapScale, hoverLift, cardContainerStagger, cardItemFade } from '@/lib/motion';
 
 const VIEWPORT = { once: true, amount: 0.2 } as const;
 
@@ -19,46 +20,69 @@ export function Home() {
   const navigate = useNavigate();
   const reduceMotion = useReducedMotion();
 
+  const revealTransition = reduceMotion
+    ? { duration: 0 }
+    : { duration: 0.45, ease: 'easeOut' as const };
+
   return (
-    <div className="min-h-screen bg-white font-sans">
+    <div className="min-h-screen bg-white dark:bg-gray-900 font-sans">
       <Navbar />
 
       {/* Hero */}
-      <section className="bg-gradient-to-br from-blue-50/60 to-white pt-8 pb-16">
+      <motion.section
+        className="bg-gradient-to-br from-blue-50/60 to-white dark:from-gray-800/60 dark:to-gray-900 pt-8 pb-16"
+        initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+        animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+        transition={revealTransition}
+      >
         <div className="flex flex-col md:flex-row items-center justify-between px-6 md:px-12 max-w-[1400px] mx-auto gap-12">
-          <div className="max-w-xl text-center md:text-left mt-10">
+          <motion.div
+            className="max-w-xl text-center md:text-left mt-10"
+            initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+            animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+            transition={{ ...revealTransition, delay: reduceMotion ? 0 : 0.08 }}
+          >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100/50 text-blue-600 text-sm font-semibold mb-8 border border-blue-200">
               <span className="flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 text-blue-600">
                 <HomeIcon size={12} />
               </span>
               Cooperative-powered. Community-driven.
             </div>
-            <h1 className="text-5xl font-extrabold text-[#1a202c] leading-tight mb-4 tracking-tight">
+            <h1 className="text-5xl font-extrabold text-[#1a202c] dark:text-white leading-tight mb-4 tracking-tight">
               Trusted Home Services,<br/>
               <span className="text-blue-600">One Tap Away</span>
             </h1>
-            <p className="text-gray-500 mb-10 text-lg leading-relaxed max-w-lg font-medium">
+            <p className="text-gray-500 dark:text-gray-400 mb-10 text-lg leading-relaxed max-w-lg font-medium">
               Connect with verified local plumbers, electricians, cleaners, and more.
               Fair wages. Transparent pricing. Community-governed.
 
               Book background-checked professionals for any repair or project. 
             </p>
             <div className="flex flex-col sm:flex-row gap-5 justify-center md:justify-start">
-              <button
+              <motion.button
+                whileTap={reduceMotion ? undefined : tapScale}
+                whileHover={reduceMotion ? undefined : hoverLift}
                 onClick={() => navigate('/register?role=customer')}
                 className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20 text-[15px]"
               >
                 I Need a Service <ArrowRight size={18} />
-              </button>
-              <button
+              </motion.button>
+              <motion.button
+                whileTap={reduceMotion ? undefined : tapScale}
+                whileHover={reduceMotion ? undefined : hoverLift}
                 onClick={() => navigate('/register?role=worker')}
-                className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl border border-gray-200 text-blue-600 font-semibold hover:bg-gray-50 transition-colors text-[15px] bg-white"
+                className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl border border-gray-200 dark:border-gray-700 text-blue-600 font-semibold hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-[15px] bg-white dark:bg-gray-800"
               >
                 Join as a Worker <ArrowRight size={18} />
-              </button>
+              </motion.button>
             </div>
-          </div>
-          <div className="flex-1 max-w-[800px] shrink-0">
+          </motion.div>
+          <motion.div
+            className="flex-1 max-w-[800px] shrink-0"
+            initial={reduceMotion ? false : { opacity: 0, scale: 0.98 }}
+            animate={reduceMotion ? undefined : { opacity: 1, scale: 1 }}
+            transition={{ ...revealTransition, delay: reduceMotion ? 0 : 0.14 }}
+          >
             <div className="rounded-[40%] overflow-hidden bg-white shadow-2xl shadow-blue-900/10 border-4 border-white">
               <img
                 src="/hero_workers.png"
@@ -66,37 +90,42 @@ export function Home() {
                 className="w-full h-auto object-cover"
               />
             </div>
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Services */}
-      <section id="services" className="relative overflow-hidden px-6 md:px-12 py-16 bg-gradient-to-b from-sky-50 via-white to-white">
+      <motion.section
+        id="services"
+        className="relative overflow-hidden px-6 md:px-12 py-16 bg-gradient-to-b from-sky-50 via-white to-white dark:from-gray-800 dark:via-gray-900 dark:to-gray-900"
+        initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+        whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+        viewport={VIEWPORT}
+        transition={revealTransition}
+      >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.12),transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(14,165,233,0.08),transparent_28%)]" />
         <div className="relative max-w-[1400px] mx-auto">
-          <h2 className="text-[28px] font-bold text-[#1a202c] mb-2">Our Services</h2>
+          <h2 className="text-[28px] font-bold text-[#1a202c] dark:text-white mb-2">Our Services</h2>
           <div className="w-12 h-1 bg-yellow-400 mb-10 rounded-full" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {SERVICES.map((svc, index) => (
+          <motion.div
+            initial="initial"
+            animate="animate"
+            variants={cardContainerStagger}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            {SERVICES.map((svc) => (
               <motion.button
                 key={svc.id}
-                initial={reduceMotion ? false : { opacity: 0, y: 22 }}
-                whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-                viewport={VIEWPORT}
-                transition={
-                  reduceMotion
-                    ? { duration: 0 }
-                    : { duration: 0.38, delay: index * 0.1, ease: 'easeOut' }
-                }
-                whileHover={reduceMotion ? undefined : { scale: 1.03 }}
-                whileTap={reduceMotion ? undefined : { scale: 0.98 }}
+                variants={cardItemFade}
+                whileTap={reduceMotion ? undefined : tapScale}
+                whileHover={reduceMotion ? undefined : hoverLift}
                 onClick={() => navigate(`/services/${svc.id}`)}
-                className="group rounded-2xl bg-white/90 border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-0.5 transition-all text-left flex justify-between overflow-hidden backdrop-blur-sm"
+                className="group rounded-2xl bg-white/90 dark:bg-gray-800/90 border border-gray-100 dark:border-gray-700 shadow-[0_2px_12px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-0.5 transition-all text-left flex justify-between overflow-hidden backdrop-blur-sm"
               >
                 <div className="p-6 flex flex-col justify-between h-full">
                   <div>
-                    <h3 className="font-semibold text-[17px] text-blue-900 mb-1 group-hover:text-blue-600 transition-colors">{svc.name}</h3>
-                    <p className="text-[13px] text-gray-500 leading-snug whitespace-pre-line">{svc.desc}</p>
+                    <h3 className="font-semibold text-[17px] text-blue-900 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{svc.name}</h3>
+                    <p className="text-[13px] text-gray-500 dark:text-gray-400 leading-snug whitespace-pre-line">{svc.desc}</p>
                   </div>
                   <motion.div
                     className="w-9 h-9 rounded-full bg-[#1e3a8a] flex items-center justify-center text-white mt-6"
@@ -117,9 +146,9 @@ export function Home() {
                 </div>
               </motion.button>
             ))}
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       <Footer />
     </div>

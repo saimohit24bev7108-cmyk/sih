@@ -1,6 +1,8 @@
+import { motion, useReducedMotion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Star, MapPin, Clock, BadgeCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { tapScale, hoverLift } from '@/lib/motion';
 
 interface WorkerProfileCardProps {
   id: string;
@@ -19,6 +21,7 @@ export function WorkerProfileCard({
   id, name, photo, rating, distance, experience, priceRange, verified, completedJobs, className
 }: WorkerProfileCardProps) {
   const navigate = useNavigate();
+  const reduceMotion = useReducedMotion();
 
   return (
     <div className={cn(
@@ -50,12 +53,14 @@ export function WorkerProfileCard({
           <p className="text-sm font-semibold text-[hsl(var(--primary))] mt-2">{priceRange}</p>
         </div>
       </div>
-      <button
+      <motion.button
+        whileTap={reduceMotion ? undefined : tapScale}
+        whileHover={reduceMotion ? undefined : hoverLift}
         onClick={() => navigate(`/customer/booking/${id}`)}
         className="w-full mt-4 py-2.5 rounded-lg bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] font-medium text-sm hover:opacity-90 transition-opacity"
       >
         Book Now
-      </button>
+      </motion.button>
     </div>
   );
 }

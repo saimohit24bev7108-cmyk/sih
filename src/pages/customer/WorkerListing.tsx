@@ -1,12 +1,15 @@
+import { motion, useReducedMotion } from 'framer-motion';
 import { useParams, useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { WorkerProfileCard } from '@/components/WorkerProfileCard';
 import { mockWorkers, serviceCategories } from '@/data/mockData';
+import { getAdaptiveStagger, cardItemFade } from '@/lib/motion';
 import { ArrowLeft } from 'lucide-react';
 
 export function WorkerListing() {
   const { category } = useParams();
   const navigate = useNavigate();
+  const reduceMotion = useReducedMotion();
   const categoryData = serviceCategories.find(c => c.id === category);
   const workers = category ? mockWorkers.filter(w => w.category === category) : mockWorkers;
 
@@ -28,11 +31,18 @@ export function WorkerListing() {
         </p>
 
         {workers.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <motion.div
+            initial={reduceMotion ? false : 'initial'}
+            animate={reduceMotion ? undefined : 'animate'}
+            variants={getAdaptiveStagger(workers.length)}
+            className="grid grid-cols-1 md:grid-cols-2 gap-4"
+          >
             {workers.map((worker) => (
-              <WorkerProfileCard key={worker.id} {...worker} />
+              <motion.div key={worker.id} variants={cardItemFade}>
+                <WorkerProfileCard {...worker} />
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         ) : (
           <div className="text-center py-16">
             <p className="text-lg text-[hsl(var(--muted-foreground))]">No workers found for this category.</p>

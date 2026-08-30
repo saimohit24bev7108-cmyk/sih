@@ -1,7 +1,8 @@
 import { motion, useReducedMotion } from 'framer-motion';
-import { useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { tapScale, hoverLift } from '@/lib/motion';
 
 const BACKGROUNDS: Record<string, string> = {
   electrical: '/electric.png',
@@ -56,9 +57,12 @@ export function ServiceOverview() {
         transition={reduceMotion ? { duration: 0 } : { duration: 0.42, ease: 'easeOut' }}
         className="max-w-3xl px-6 py-16 ml-8 bg-white/90 rounded-2xl shadow-lg"
       >
-        <button onClick={() => navigate('/')} className="flex items-center gap-2 text-sm font-bold text-black hover:opacity-70 mb-6">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-sm font-bold text-black hover:opacity-70 mb-6"
+        >
           <ArrowLeft size={16} /> Back to Home
-        </button>
+        </Link>
         <div className="flex items-center gap-3 mb-4">
           <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-2xl ${service.color}`}>
             {service.icon}
@@ -96,8 +100,8 @@ export function ServiceOverview() {
 
         <motion.button
           onClick={handleRequestService}
-          whileHover={reduceMotion ? undefined : { scale: 1.03 }}
-          whileTap={reduceMotion ? undefined : { scale: 0.98 }}
+          whileHover={reduceMotion ? undefined : hoverLift}
+          whileTap={reduceMotion ? undefined : tapScale}
           transition={{ duration: 0.2 }}
           className="inline-flex items-center gap-2 px-8 py-3.5 bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] rounded-xl font-semibold hover:opacity-90 transition-opacity"
         >

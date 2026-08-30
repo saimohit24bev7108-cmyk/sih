@@ -1,12 +1,15 @@
+import { motion, useReducedMotion } from 'framer-motion';
 import { useState } from 'react';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { StatCard } from '@/components/ui/stat-card';
 import { ImagesBadge } from '@/components/ui/images-badge';
 import { mockJobRequests, workerEarnings, workerBadgeImages } from '@/data/mockData';
+import { getAdaptiveStagger, cardItemFade, tapScale, hoverLift } from '@/lib/motion';
 import { DollarSign, Star, TrendingUp, CheckCircle, MapPin, Calendar } from 'lucide-react';
 
 export function WorkerDashboard() {
   const [available, setAvailable] = useState(true);
+  const reduceMotion = useReducedMotion();
 
   return (
     <DashboardLayout>
@@ -15,7 +18,9 @@ export function WorkerDashboard() {
           <h1 className="text-2xl font-extrabold text-[hsl(var(--foreground))]">Worker Dashboard</h1>
           <div className="flex items-center gap-3">
             <span className="text-sm text-[hsl(var(--muted-foreground))]">Availability</span>
-            <button
+            <motion.button
+              whileTap={reduceMotion ? undefined : tapScale}
+              whileHover={reduceMotion ? undefined : hoverLift}
               onClick={() => setAvailable(!available)}
               className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${
                 available ? 'bg-green-500' : 'bg-gray-300'
@@ -26,7 +31,7 @@ export function WorkerDashboard() {
                   available ? 'translate-x-6' : 'translate-x-1'
                 }`}
               />
-            </button>
+            </motion.button>
             <span className={`text-sm font-medium ${available ? 'text-green-600' : 'text-gray-500'}`}>
               {available ? 'Online' : 'Offline'}
             </span>
@@ -54,7 +59,10 @@ export function WorkerDashboard() {
         </div>
 
         {/* Earnings Summary */}
-        <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-6 mb-8">
+        <motion.div
+          whileHover={reduceMotion ? undefined : hoverLift}
+          className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-6 mb-8"
+        >
           <h2 className="text-lg font-semibold text-[hsl(var(--card-foreground))] mb-4">Earnings Summary</h2>
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
@@ -70,15 +78,22 @@ export function WorkerDashboard() {
               <p className="text-sm text-[hsl(var(--muted-foreground))]">This Month</p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Incoming Job Requests */}
         <div>
           <h2 className="text-lg font-semibold text-[hsl(var(--foreground))] mb-4">Incoming Job Requests</h2>
-          <div className="space-y-4">
+          <motion.div
+            initial={reduceMotion ? false : 'initial'}
+            animate={reduceMotion ? undefined : 'animate'}
+            variants={getAdaptiveStagger(mockJobRequests.length)}
+            className="space-y-4"
+          >
             {mockJobRequests.map((job) => (
-              <div
+              <motion.div
                 key={job.id}
+                variants={cardItemFade}
+                whileHover={reduceMotion ? undefined : hoverLift}
                 className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-5"
               >
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
@@ -92,17 +107,17 @@ export function WorkerDashboard() {
                     <p className="text-sm font-medium text-[hsl(var(--primary))] mt-2">Budget: {job.budget}</p>
                   </div>
                   <div className="flex gap-2 shrink-0">
-                    <button className="px-4 py-2 rounded-lg bg-green-500 text-white text-sm font-medium hover:bg-green-600 transition-colors">
+                    <motion.button whileTap={reduceMotion ? undefined : tapScale} className="px-4 py-2 rounded-lg bg-green-500 text-white text-sm font-medium hover:bg-green-600 transition-colors">
                       Accept
-                    </button>
-                    <button className="px-4 py-2 rounded-lg border border-red-300 text-red-500 text-sm font-medium hover:bg-red-50 transition-colors">
+                    </motion.button>
+                    <motion.button whileTap={reduceMotion ? undefined : tapScale} className="px-4 py-2 rounded-lg border border-red-300 text-red-500 text-sm font-medium hover:bg-red-50 transition-colors">
                       Reject
-                    </button>
+                    </motion.button>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </div>
     </DashboardLayout>

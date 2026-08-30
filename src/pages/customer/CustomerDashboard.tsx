@@ -1,13 +1,16 @@
+import { motion, useReducedMotion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { StatCard } from '@/components/ui/stat-card';
 import { serviceCategories, mockBookings } from '@/data/mockData';
+import { getAdaptiveStagger, cardItemFade, tapScale, hoverLift } from '@/lib/motion';
 import { CalendarCheck, Clock, CheckCircle, Search } from 'lucide-react';
 import { useState } from 'react';
 
 export function CustomerDashboard() {
   const navigate = useNavigate();
   const [problem, setProblem] = useState('');
+  const reduceMotion = useReducedMotion();
 
   return (
     <DashboardLayout>
@@ -35,39 +38,56 @@ export function CustomerDashboard() {
                 className="w-full pl-10 pr-4 py-3 rounded-lg border border-[hsl(var(--input))] bg-[hsl(var(--background))] text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring))]"
               />
             </div>
-            <button
+            <motion.button
+              whileTap={reduceMotion ? undefined : tapScale}
+              whileHover={reduceMotion ? undefined : hoverLift}
               onClick={() => navigate('/customer/services')}
               className="px-6 py-3 bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] rounded-lg font-medium text-sm hover:opacity-90 transition-opacity shrink-0"
             >
               Find Help
-            </button>
+            </motion.button>
           </div>
         </div>
 
         {/* Service Categories */}
         <div className="mb-8">
           <h2 className="text-lg font-semibold text-[hsl(var(--foreground))] mb-4">Service Categories</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+          <motion.div
+            initial={reduceMotion ? false : 'initial'}
+            animate={reduceMotion ? undefined : 'animate'}
+            variants={getAdaptiveStagger(serviceCategories.length)}
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3"
+          >
             {serviceCategories.map((cat) => (
-              <button
+              <motion.button
                 key={cat.id}
+                variants={cardItemFade}
+                whileTap={reduceMotion ? undefined : tapScale}
+                whileHover={reduceMotion ? undefined : hoverLift}
                 onClick={() => navigate(`/customer/service-request/${cat.id}`)}
                 className="flex flex-col items-center gap-2 p-4 rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] hover:shadow-md transition-shadow"
               >
                 <span className="text-3xl">{cat.icon}</span>
                 <span className="text-xs font-medium text-[hsl(var(--card-foreground))]">{cat.name}</span>
-              </button>
+              </motion.button>
             ))}
-          </div>
+          </motion.div>
         </div>
 
         {/* Recent Bookings */}
         <div className="mb-8">
           <h2 className="text-lg font-semibold text-[hsl(var(--foreground))] mb-4">Recent Bookings</h2>
-          <div className="space-y-3">
+          <motion.div
+            initial={reduceMotion ? false : 'initial'}
+            animate={reduceMotion ? undefined : 'animate'}
+            variants={getAdaptiveStagger(mockBookings.length)}
+            className="space-y-3"
+          >
             {mockBookings.map((booking) => (
-              <div
+              <motion.div
                 key={booking.id}
+                variants={cardItemFade}
+                whileHover={reduceMotion ? undefined : hoverLift}
                 className="flex items-center justify-between p-4 rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))]"
               >
                 <div>
@@ -84,9 +104,9 @@ export function CustomerDashboard() {
                     {booking.status}
                   </span>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
 
         {/* Track Current Service */}
