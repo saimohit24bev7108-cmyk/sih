@@ -44,49 +44,54 @@ export function ChooseRole({ mode }: ChooseRoleProps) {
   return (
     <div className="min-h-screen flex flex-col bg-white overflow-x-hidden">
       <Navbar />
-      <div className="flex-1 flex items-center justify-center px-4 py-16">
-        <div className="w-full max-w-md">
-          <h1 className="text-2xl font-extrabold text-blue-900 text-center mb-2">
-            {mode === 'login' ? 'Log in as' : 'Register as'}
-          </h1>
-          <p className="text-sm text-gray-500 text-center mb-8">
-            {mode === 'login' ? 'Choose your role to continue' : 'Select how you want to join FixFlow'}
-          </p>
-          <div className="flex flex-col gap-4">
-            {roles.map((role, index) => (
-              <motion.button
-                key={role.id}
-                initial={reduceMotion ? false : { opacity: 0, y: 18 }}
-                animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-                transition={
-                  reduceMotion
-                    ? { duration: 0 }
-                    : { duration: 0.32, delay: index * 0.08, ease: 'easeOut' }
-                }
-                whileHover={reduceMotion ? undefined : { scale: 1.02 }}
-                whileTap={reduceMotion ? undefined : { scale: 0.98 }}
-                onClick={() => handleRoleSelect(role.path, role.id)}
-                className={`flex items-center gap-4 w-full p-5 rounded-xl border-2 text-left group transition-all ${
-                  selectedRole === role.id
-                    ? 'border-blue-500 bg-blue-50 shadow-[0_0_0_3px_rgba(59,130,246,0.08)]'
-                    : 'border-blue-100 bg-blue-50/50 hover:border-blue-400 hover:bg-blue-50'
-                }`}
-              >
-                <motion.div
-                  className={`w-14 h-14 rounded-full flex items-center justify-center shrink-0 transition-colors ${
-                    selectedRole === role.id ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white'
+      <div className="flex-1 w-full px-4 py-12 sm:px-6 lg:px-8 xl:px-10">
+        <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-center">
+          <div className="text-center mb-10 md:mb-12">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-blue-900 leading-tight">
+              {mode === 'login' ? 'Log in as' : 'Register as'}
+            </h1>
+            <p className="mt-3 text-base sm:text-lg text-gray-600">
+              {mode === 'login' ? 'Choose your role to continue' : 'Select how you want to join FixFlow'}
+            </p>
+          </div>
+
+          <div className="w-full flex justify-center">
+            <div className="grid w-full max-w-[760px] grid-cols-1 justify-items-center gap-5 md:grid-cols-2 lg:gap-6">
+              {roles.map((role, index) => (
+                <motion.button
+                  key={role.id}
+                  initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+                  animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+                  transition={
+                    reduceMotion
+                      ? { duration: 0 }
+                      : { duration: 0.32, delay: index * 0.08, ease: 'easeOut' }
+                  }
+                  whileHover={reduceMotion ? undefined : { y: -4, scale: 1.01 }}
+                  whileTap={reduceMotion ? undefined : { scale: 0.99 }}
+                  onClick={() => handleRoleSelect(role.path, role.id)}
+                  className={`group flex h-full min-h-[220px] w-full max-w-[330px] flex-col items-center justify-center rounded-2xl border-2 p-6 text-center transition-all ${
+                    selectedRole === role.id
+                      ? 'border-blue-500 bg-blue-50 shadow-[0_0_0_3px_rgba(59,130,246,0.08)]'
+                      : 'border-blue-100 bg-blue-50/50 shadow-sm hover:border-blue-400 hover:bg-blue-50 hover:shadow-md'
                   }`}
-                  whileHover={reduceMotion ? undefined : { rotate: 4 }}
-                  transition={{ duration: 0.2 }}
                 >
-                  {role.icon}
-                </motion.div>
-                <div>
-                  <h3 className="font-semibold text-blue-900">{role.label}</h3>
-                  <p className="text-xs text-gray-500 mt-0.5">{role.desc}</p>
-                </div>
-              </motion.button>
-            ))}
+                  <motion.div
+                    className={`mb-5 flex h-16 w-16 items-center justify-center rounded-full transition-colors ${
+                      selectedRole === role.id ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white'
+                    }`}
+                    whileHover={reduceMotion ? undefined : { rotate: 4 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {role.icon}
+                  </motion.div>
+                  <div className="space-y-1">
+                    <h3 className="text-2xl font-bold text-blue-900">{role.label}</h3>
+                    <p className="text-sm text-gray-600 leading-relaxed">{role.desc}</p>
+                  </div>
+                </motion.button>
+              ))}
+            </div>
           </div>
         </div>
       </div>

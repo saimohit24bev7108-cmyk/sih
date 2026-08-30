@@ -35,9 +35,9 @@ export function Home() {
         animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
         transition={revealTransition}
       >
-        <div className="flex flex-col md:flex-row items-center justify-between px-6 md:px-12 max-w-[1400px] mx-auto gap-12">
+        <div className="flex flex-col md:flex-row items-center justify-between px-6 md:px-10 lg:px-12 max-w-[1440px] mx-auto gap-8 lg:gap-12">
           <motion.div
-            className="max-w-xl text-center md:text-left mt-10"
+            className="w-full md:w-[58%] lg:w-[60%] text-center md:text-left mt-6 md:mt-10"
             initial={reduceMotion ? false : { opacity: 0, y: 18 }}
             animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
             transition={{ ...revealTransition, delay: reduceMotion ? 0 : 0.08 }}
@@ -48,15 +48,15 @@ export function Home() {
               </span>
               Cooperative-powered. Community-driven.
             </div>
-            <h1 className="text-5xl font-extrabold text-[#1a202c] dark:text-white leading-tight mb-4 tracking-tight">
-              Trusted Home Services,<br/>
-              <span className="text-blue-600">One Tap Away</span>
+            <h1 className="text-[clamp(2.7rem,4vw,5rem)] font-extrabold text-[#1a202c] dark:text-white leading-[0.96] tracking-[-0.04em] mb-4 max-w-[700px] md:max-w-[760px] lg:max-w-[820px]">
+              <span className="block">Trusted Home Services,</span>
+              <span className="block text-blue-600">One Tap Away</span>
             </h1>
-            <p className="text-gray-500 dark:text-gray-400 mb-10 text-lg leading-relaxed max-w-lg font-medium">
+            <p className="text-gray-500 dark:text-gray-400 mb-10 text-lg leading-relaxed max-w-[620px] md:max-w-[700px] font-medium text-left md:text-left mx-auto md:mx-0">
               Connect with verified local plumbers, electricians, cleaners, and more.
               Fair wages. Transparent pricing. Community-governed.
 
-              Book background-checked professionals for any repair or project. 
+              Book background-checked professionals for any repair or project.
             </p>
             <div className="flex flex-col sm:flex-row gap-5 justify-center md:justify-start">
               <motion.button
@@ -77,17 +77,18 @@ export function Home() {
               </motion.button>
             </div>
           </motion.div>
+
           <motion.div
-            className="flex-1 max-w-[800px] shrink-0"
+            className="w-full md:w-[42%] lg:w-[40%] max-w-[760px] shrink-0 flex justify-center md:justify-end"
             initial={reduceMotion ? false : { opacity: 0, scale: 0.98 }}
             animate={reduceMotion ? undefined : { opacity: 1, scale: 1 }}
             transition={{ ...revealTransition, delay: reduceMotion ? 0 : 0.14 }}
           >
-            <div className="rounded-[40%] overflow-hidden bg-white shadow-2xl shadow-blue-900/10 border-4 border-white">
+            <div className="w-full max-w-[620px] rounded-[40%] overflow-hidden bg-white shadow-2xl shadow-blue-900/10 border-4 border-white">
               <img
                 src="/hero_workers.png"
                 alt="Home service workers"
-                className="w-full h-auto object-cover"
+                className="w-full h-auto object-cover block"
               />
             </div>
           </motion.div>

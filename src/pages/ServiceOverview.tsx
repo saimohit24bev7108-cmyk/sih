@@ -48,66 +48,79 @@ export function ServiceOverview() {
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center bg-no-repeat relative overflow-x-hidden"
-      style={{ backgroundImage: `url('${BACKGROUNDS[category]}')` }}
+      className="min-h-screen overflow-x-hidden bg-cover bg-center bg-no-repeat relative"
+      style={{
+        backgroundImage: `linear-gradient(90deg, rgba(0,0,0,0.08), rgba(0,0,0,0.06)), url('${BACKGROUNDS[category]}')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+      }}
     >
-      <motion.section
-        initial={reduceMotion ? false : { opacity: 0, y: 24 }}
-        animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-        transition={reduceMotion ? { duration: 0 } : { duration: 0.42, ease: 'easeOut' }}
-        className="max-w-3xl mx-4 sm:mx-auto px-4 sm:px-6 py-16 bg-white/90 rounded-2xl shadow-lg"
-      >
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-sm font-bold text-black hover:opacity-70 mb-6"
+      <div className="min-h-screen px-4 py-6 sm:px-6 md:px-8 lg:px-10 xl:px-14 flex items-center justify-start">
+        <motion.section
+          initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+          animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+          transition={reduceMotion ? { duration: 0 } : { duration: 0.42, ease: 'easeOut' }}
+          className="relative z-10 w-full max-w-[820px] rounded-[32px] bg-white/75 backdrop-blur-[2px] shadow-[0_30px_80px_rgba(15,23,42,0.18)] px-5 py-6 sm:px-7 sm:py-8 md:px-8 md:py-10 lg:px-10 lg:py-12 xl:px-12 xl:py-14"
         >
-          <ArrowLeft size={16} /> Back to Home
-        </Link>
-        <div className="flex items-center gap-3 mb-4">
-          <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-2xl ${service.color}`}>
-            {service.icon}
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 text-sm font-bold text-black hover:opacity-70 mb-7"
+          >
+            <ArrowLeft size={16} /> Back to Home
+          </Link>
+
+          <div className="flex items-center gap-4 mb-5">
+            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-md ${service.color}`}>
+              {service.icon}
+            </div>
+            <h1 className="text-4xl sm:text-5xl lg:text-[4rem] font-extrabold text-black leading-[0.95] tracking-[-0.04em]">
+              {service.name}
+            </h1>
           </div>
-          <h1 className="text-3xl font-extrabold text-black">{service.name}</h1>
-        </div>
-        <p className="text-black font-semibold mb-8">{service.description}</p>
 
-        <div className="mb-8">
-          <h2 className="font-bold text-black mb-3">What's included</h2>
-          <ul className="grid grid-cols-2 gap-2">
-            {service.includes.map((item, index) => (
-              <motion.li
-                key={item}
-                initial={reduceMotion ? false : { opacity: 0, y: 10 }}
-                animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-                transition={
-                  reduceMotion
-                    ? { duration: 0 }
-                    : { duration: 0.28, delay: index * 0.08, ease: 'easeOut' }
-                }
-                className="text-sm text-black font-semibold flex items-center gap-2"
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--primary))]" />
-                {item}
-              </motion.li>
-            ))}
-          </ul>
-        </div>
+          <p className="text-lg sm:text-xl md:text-2xl text-black font-medium leading-snug mb-8 max-w-[620px]">
+            {service.description}
+          </p>
 
-        <div className="mb-10">
-          <span className="text-sm text-black">Typical price range: </span>
-          <span className="font-bold text-black">{service.priceRange}</span>
-        </div>
+          <div className="mb-8">
+            <h2 className="font-bold text-2xl sm:text-3xl text-black mb-4">What's included</h2>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 max-w-[620px]">
+              {service.includes.map((item, index) => (
+                <motion.li
+                  key={item}
+                  initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+                  animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+                  transition={
+                    reduceMotion
+                      ? { duration: 0 }
+                      : { duration: 0.28, delay: index * 0.08, ease: 'easeOut' }
+                  }
+                  className="text-base sm:text-lg text-black font-semibold flex items-center gap-3"
+                >
+                  <span className="w-2 h-2 rounded-full bg-[hsl(var(--primary))]" />
+                  {item}
+                </motion.li>
+              ))}
+            </ul>
+          </div>
 
-        <motion.button
-          onClick={handleRequestService}
-          whileHover={reduceMotion ? undefined : hoverLift}
-          whileTap={reduceMotion ? undefined : tapScale}
-          transition={{ duration: 0.2 }}
-          className="inline-flex items-center gap-2 px-8 py-3.5 bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] rounded-xl font-semibold hover:opacity-90 transition-opacity"
-        >
-          Request This Service <ArrowRight size={18} />
-        </motion.button>
-      </motion.section>
+          <div className="mb-10">
+            <span className="text-lg sm:text-xl text-black">Typical price range: </span>
+            <span className="text-lg sm:text-xl font-extrabold text-black">{service.priceRange}</span>
+          </div>
+
+          <motion.button
+            onClick={handleRequestService}
+            whileHover={reduceMotion ? undefined : hoverLift}
+            whileTap={reduceMotion ? undefined : tapScale}
+            transition={{ duration: 0.2 }}
+            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] rounded-xl text-lg sm:text-xl font-semibold hover:opacity-90 transition-opacity w-full sm:w-auto"
+          >
+            Request This Service <ArrowRight size={20} />
+          </motion.button>
+        </motion.section>
+      </div>
     </div>
   );
 }

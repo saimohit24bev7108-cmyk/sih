@@ -1,9 +1,101 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --font-sans: "Poppins", system-ui, sans-serif;
+  /* colors */
+  --color-outline-variant: #c7c4d8;
+  --color-on-secondary-fixed: #23005c;
+  --color-on-tertiary-fixed: #002113;
+  --color-surface-tint: #4d44e3;
+  --color-on-primary-container: #dad7ff;
+  --color-primary: #3525cd;
+  --color-outline: #777587;
+  --color-surface-container: #e5eeff;
+  --color-surface-container-highest: #d3e4fe;
+  --color-error-container: #ffdad6;
+  --color-on-secondary-fixed-variant: #5516be;
+  --color-on-error: #ffffff;
+  --color-surface-container-high: #dce9ff;
+  --color-secondary: #6b38d4;
+  --color-on-secondary-container: #fffbff;
+  --color-surface: #f8f9ff;
+  --color-on-tertiary: #ffffff;
+  --color-inverse-on-surface: #eaf1ff;
+  --color-surface-bright: #f8f9ff;
+  --color-secondary-fixed: #e9ddff;
+  --color-primary-fixed: #e2dfff;
+  --color-on-tertiary-fixed-variant: #005236;
+  --color-tertiary-fixed: #6ffbbe;
+  --color-on-primary-fixed-variant: #3323cc;
+  --color-secondary-container: #8455ef;
+  --color-secondary-fixed-dim: #d0bcff;
+  --color-tertiary-container: #006e4b;
+  --color-error: #ba1a1a;
+  --color-surface-dim: #cbdbf5;
+  --color-inverse-primary: #c3c0ff;
+  --color-primary-fixed-dim: #c3c0ff;
+  --color-on-surface-variant: #464555;
+  --color-on-primary-fixed: #0f0069;
+  --color-tertiary-fixed-dim: #4edea3;
+  --color-surface-variant: #d3e4fe;
+  --color-on-secondary: #ffffff;
+  --color-on-error-container: #93000a;
+  --color-on-tertiary-container: #67f4b7;
+  --color-surface-container-lowest: #ffffff;
+  --color-on-background: #0b1c30;
+  --color-background: #f8f9ff;
+  --color-surface-container-low: #eff4ff;
+  --color-inverse-surface: #213145;
+  --color-tertiary: #005338;
+  --color-on-surface: #0b1c30;
+  --color-primary-container: #4f46e5;
+  --color-on-primary: #ffffff;
+
+  /* spacing */
+  --spacing-xl: 32px;
+  --spacing-md: 16px;
+  --spacing-container-margin: 16px;
+  --spacing-sm: 8px;
+  --spacing-gutter: 12px;
+  --spacing-base: 4px;
+  --spacing-lg: 24px;
+  --spacing-xs: 4px;
+  --spacing-safe: env(safe-area-inset-bottom); /* used by worker_earnings_transparency (pb-safe) */
+
+  /* radius */
+  --radius-DEFAULT: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 9999px;
+
+  /* fonts */
+  --font-headline-lg: "Plus Jakarta Sans";
+  --font-headline-lg-mobile: "Plus Jakarta Sans";
+  --font-headline-md: "Plus Jakarta Sans";
+  --font-body-lg: "Inter";
+  --font-body-md: "Inter";
+  --font-label-md: "Inter";
+  --font-label-sm: "Inter";
+
+  /* font sizes (size / line-height) */
+  --text-headline-lg: 30px;
+  --text-headline-lg--line-height: 38px;
+  --text-headline-lg-mobile: 24px;
+  --text-headline-lg-mobile--line-height: 32px;
+  --text-headline-md: 20px;
+  --text-headline-md--line-height: 28px;
+  --text-body-lg: 16px;
+  --text-body-lg--line-height: 24px;
+  --text-body-md: 14px;
+  --text-body-md--line-height: 20px;
+  --text-label-md: 12px;
+  --text-label-md--line-height: 16px;
+  --text-label-sm: 11px;
+  --text-label-sm--line-height: 14px;
 }
 
 :root {
@@ -76,4 +168,19 @@
 body {
   @apply bg-[hsl(var(--background))] text-[hsl(var(--foreground))] antialiased;
   font-family: "Poppins", system-ui, sans-serif;
+}
+
+/* Material Symbols base class used throughout every Stitch screen */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
 }
