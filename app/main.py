@@ -4,7 +4,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 
-from app.api.routes import auth, service_requests
+from app.api.routes import (
+    admin,
+    auth,
+    categories,
+    customer,
+    service_requests,
+    users,
+    workers,
+)
 from app.core.config import settings
 from app.core.responses import ApiResponse
 from app.core.exceptions import (
@@ -28,7 +36,13 @@ app.add_exception_handler(HTTPException, http_exception_handler)
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
 app.add_exception_handler(Exception, global_exception_handler)
 
+# Include all route modules under /api prefix
 app.include_router(auth.router, prefix="/api")
+app.include_router(users.router, prefix="/api")
+app.include_router(customer.router, prefix="/api")
+app.include_router(workers.router, prefix="/api")
+app.include_router(categories.router, prefix="/api")
+app.include_router(admin.router, prefix="/api")
 app.include_router(service_requests.router, prefix="/api")
 
 
@@ -47,4 +61,3 @@ def health_check(db: Session = Depends(get_db)):
             message="Database connection failed", 
             error=str(e)
         )
-
