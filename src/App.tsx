@@ -3,6 +3,7 @@ import { AnimatePresence } from 'framer-motion';
 import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { PageWrapper } from '@/components/PageWrapper';
+import { RequireAuth } from '@/components/RequireAuth';
 
 // New pages
 import { Home } from '@/pages/Home';
@@ -71,25 +72,25 @@ function AnimatedRoutes() {
         <Route path="/otp-verify/:role" element={<PageWrapper><OTPVerify /></PageWrapper>} />
 
         {/* ===== Customer Pages ===== */}
-        <Route path="/customer/dashboard" element={<PageWrapper><CustomerDashboard /></PageWrapper>} />
-        <Route path="/customer/services" element={<PageWrapper><ServiceCategories /></PageWrapper>} />
-        <Route path="/customer/service-request/:category" element={<PageWrapper><ServiceRequest /></PageWrapper>} />
-        <Route path="/customer/workers/:category" element={<PageWrapper><WorkerListing /></PageWrapper>} />
-        <Route path="/customer/booking/:workerId" element={<PageWrapper><BookingPage /></PageWrapper>} />
-        <Route path="/customer/bookings" element={<PageWrapper><BookingsPlaceholder /></PageWrapper>} />
+        <Route path="/customer/dashboard" element={<RequireAuth role="customer"><PageWrapper><CustomerDashboard /></PageWrapper></RequireAuth>} />
+        <Route path="/customer/services" element={<RequireAuth role="customer"><PageWrapper><ServiceCategories /></PageWrapper></RequireAuth>} />
+        <Route path="/customer/service-request/:category" element={<RequireAuth role="customer"><PageWrapper><ServiceRequest /></PageWrapper></RequireAuth>} />
+        <Route path="/customer/workers/:category" element={<RequireAuth role="customer"><PageWrapper><WorkerListing /></PageWrapper></RequireAuth>} />
+        <Route path="/customer/booking/:workerId" element={<RequireAuth role="customer"><PageWrapper><BookingPage /></PageWrapper></RequireAuth>} />
+        <Route path="/customer/bookings" element={<RequireAuth role="customer"><PageWrapper><BookingsPlaceholder /></PageWrapper></RequireAuth>} />
 
         {/* ===== Worker Pages ===== */}
-        <Route path="/worker/dashboard" element={<PageWrapper><WorkerDashboard /></PageWrapper>} />
-        <Route path="/worker/jobs" element={<PageWrapper><WorkerPlaceholder /></PageWrapper>} />
-        <Route path="/worker/earnings" element={<PageWrapper><WorkerPlaceholder /></PageWrapper>} />
-        <Route path="/worker/profile" element={<PageWrapper><WorkerPlaceholder /></PageWrapper>} />
+        <Route path="/worker/dashboard" element={<RequireAuth role="worker"><PageWrapper><WorkerDashboard /></PageWrapper></RequireAuth>} />
+        <Route path="/worker/jobs" element={<RequireAuth role="worker"><PageWrapper><WorkerPlaceholder /></PageWrapper></RequireAuth>} />
+        <Route path="/worker/earnings" element={<RequireAuth role="worker"><PageWrapper><WorkerPlaceholder /></PageWrapper></RequireAuth>} />
+        <Route path="/worker/profile" element={<RequireAuth role="worker"><PageWrapper><WorkerPlaceholder /></PageWrapper></RequireAuth>} />
 
         {/* ===== Admin Pages ===== */}
-        <Route path="/admin/dashboard" element={<PageWrapper><AdminDashboard /></PageWrapper>} />
-        <Route path="/admin/workers" element={<PageWrapper><AdminPlaceholder /></PageWrapper>} />
-        <Route path="/admin/bookings" element={<PageWrapper><AdminPlaceholder /></PageWrapper>} />
-        <Route path="/admin/disputes" element={<PageWrapper><AdminPlaceholder /></PageWrapper>} />
-        <Route path="/admin/verifications" element={<PageWrapper><AdminPlaceholder /></PageWrapper>} />
+        <Route path="/admin/dashboard" element={<RequireAuth role="admin"><PageWrapper><AdminDashboard /></PageWrapper></RequireAuth>} />
+        <Route path="/admin/workers" element={<RequireAuth role="admin"><PageWrapper><AdminPlaceholder /></PageWrapper></RequireAuth>} />
+        <Route path="/admin/bookings" element={<RequireAuth role="admin"><PageWrapper><AdminPlaceholder /></PageWrapper></RequireAuth>} />
+        <Route path="/admin/disputes" element={<RequireAuth role="admin"><PageWrapper><AdminPlaceholder /></PageWrapper></RequireAuth>} />
+        <Route path="/admin/verifications" element={<RequireAuth role="admin"><PageWrapper><AdminPlaceholder /></PageWrapper></RequireAuth>} />
       </Routes>
     </AnimatePresence>
   );

@@ -1,16 +1,40 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+﻿export const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
+const REFRESH_TOKEN_STORAGE_KEY = 'fixflow_refresh_token';
 
 let accessToken: string | null = null;
 let refreshToken: string | null = null;
 
+function readStoredRefreshToken(): string | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  return window.localStorage.getItem(REFRESH_TOKEN_STORAGE_KEY);
+}
+
+function persistRefreshToken(nextRefreshToken: string | null) {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  if (!nextRefreshToken) {
+    window.localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
+    return;
+  }
+
+  window.localStorage.setItem(REFRESH_TOKEN_STORAGE_KEY, nextRefreshToken);
+}
+
 export function setAuthTokens(nextAccessToken: string | null, nextRefreshToken: string | null) {
   accessToken = nextAccessToken;
   refreshToken = nextRefreshToken;
+  persistRefreshToken(nextRefreshToken);
 }
 
 export function clearAuthTokens() {
   accessToken = null;
   refreshToken = null;
+  persistRefreshToken(null);
 }
 
 export function getAccessToken() {
@@ -18,11 +42,12 @@ export function getAccessToken() {
 }
 
 export function getRefreshToken() {
-  return refreshToken;
+  return refreshToken ?? readStoredRefreshToken();
 }
 
-async function refreshAccessToken(): Promise<boolean> {
-  if (!refreshToken) {
+export async function refreshAccessToken(): Promise<boolean> {
+  const activeRefreshToken = refreshToken ?? readStoredRefreshToken();
+  if (!activeRefreshToken) {
     return false;
   }
 
@@ -31,7 +56,7 @@ async function refreshAccessToken(): Promise<boolean> {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ refresh_token: refreshToken }),
+      body: JSON.stringify({ refresh_token: activeRefreshToken }),
     });
 
     const data = await response.json().catch(() => ({}));
@@ -40,7 +65,7 @@ async function refreshAccessToken(): Promise<boolean> {
     }
 
     const nextAccessToken = data?.data?.access_token ?? data?.access_token ?? null;
-    const nextRefreshToken = data?.data?.refresh_token ?? data?.refresh_token ?? refreshToken;
+    const nextRefreshToken = data?.data?.refresh_token ?? data?.refresh_token ?? activeRefreshToken;
 
     if (!nextAccessToken) {
       throw new Error('No access token returned from refresh endpoint');
@@ -48,6 +73,7 @@ async function refreshAccessToken(): Promise<boolean> {
 
     accessToken = nextAccessToken;
     refreshToken = nextRefreshToken;
+    persistRefreshToken(nextRefreshToken);
     return true;
   } catch {
     clearAuthTokens();
@@ -55,20 +81,46 @@ async function refreshAccessToken(): Promise<boolean> {
   }
 }
 
+export async function refreshSessionSilently(): Promise<{ isLoggedIn: boolean; role: string | null; userName: string }> {
+  const refreshed = await refreshAccessToken();
+  if (!refreshed) {
+    return { isLoggedIn: false, role: null, userName: '' };
+  }
+
+  try {
+   const profile = await apiRequest<{ data?: { role?: string; email?: string }; role?: string; email?: string }>(
+      '/api/users/me',
+      { method: 'GET', requireAuth: true, skipRefresh: false },
+    );
+
+   const payload = 'data' in profile && profile.data ? profile.data : profile;
+   const role = payload?.role ?? 'customer';
+    const userName = payload?.email ? String(payload.email).split('@')[0] : 'User';
+
+    return { isLoggedIn: true, role, userName };
+  } catch {
+    clearAuthTokens();
+    return { isLoggedIn: false, role: null, userName: '' };
+  }
+}
+
 export async function apiRequest<T>(
   path: string,
   options: {
     method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-    body?: Record<string, unknown>;
+    body?: Record<string, unknown> | FormData;
     requireAuth?: boolean;
     skipRefresh?: boolean;
   } = {},
 ): Promise<T> {
   const { method = 'GET', body, requireAuth = true, skipRefresh = false } = options;
 
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
+  const headers: Record<string, string> = {};
+  const isFormData = body instanceof FormData;
+
+  if (!isFormData) {
+    headers['Content-Type'] = 'application/json';
+  }
 
   if (requireAuth && accessToken) {
     headers.Authorization = `Bearer ${accessToken}`;
@@ -81,7 +133,7 @@ export async function apiRequest<T>(
   };
 
   if (body && method !== 'GET') {
-    requestInit.body = JSON.stringify(body);
+    requestInit.body = isFormData ? body : JSON.stringify(body);
   }
 
   let response = await fetch(`${API_BASE_URL}${path}`, requestInit);

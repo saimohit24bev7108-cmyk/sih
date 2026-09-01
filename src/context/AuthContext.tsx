@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
-import { apiRequest, clearAuthTokens, getRefreshToken, setAuthTokens } from '@/services/api';
+﻿import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { apiRequest, clearAuthTokens, getRefreshToken, refreshSessionSilently, setAuthTokens } from '@/services/api';
 
 export type UserRole = 'customer' | 'worker' | 'admin';
 
@@ -31,6 +31,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     role: null,
     userName: '',
   });
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const restoreSession = async () => {
+      const savedSession = await refreshSessionSilently();
+      if (!isMounted) {
+        return;
+      }
+
+      setAuth({
+        isLoggedIn: savedSession.isLoggedIn,
+        role: (savedSession.role as UserRole | null) ?? null,
+        userName: savedSession.userName,
+      });
+    };
+
+    void restoreSession();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const setAuthenticatedState = (role: UserRole, userName: string, accessToken: string, refreshToken: string) => {
     setAuthTokens(accessToken, refreshToken);

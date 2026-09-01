@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth, type UserRole } from '@/context/AuthContext';
+import { apiRequest } from '@/services/api';
 import { ArrowLeft } from 'lucide-react';
 
 export function OTPVerify() {
@@ -78,15 +79,11 @@ export function OTPVerify() {
 
   const handleResend = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/auth/otp/send', {
+      await apiRequest('/api/auth/otp/send', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone_number: phoneNumber, purpose: 'login' }),
+        body: { phone_number: phoneNumber, purpose: 'login' },
+        requireAuth: false,
       });
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok) {
-        throw new Error(data?.detail || data?.message || 'Could not resend OTP');
-      }
       setCountdown(30);
       setOtp(['', '', '', '', '', '']);
       inputRefs.current[0]?.focus();
